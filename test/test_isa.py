@@ -14,7 +14,7 @@ from numpy.testing import (assert_equal, assert_almost_equal,
 
 import pytest
 
-from isa import std
+from isa import atm
 
 
 def test_sea_level():
@@ -23,7 +23,7 @@ def test_sea_level():
     expected_p = 101325.0  # Pa
     expected_rho = 1.2250  # kg / m3
 
-    T, p, rho = std(h)
+    T, p, rho = atm(h)
 
     # Reads: "Assert if T equals expected_T"
     assert_equal(T, expected_T)
@@ -34,7 +34,7 @@ def test_sea_level():
 def test_scalar_input_returns_scalar_output():
     h = 0.0  # km
 
-    T, p, rho = std(h)
+    T, p, rho = atm(h)
 
     # Reads: "Assert if T is a float"
     assert isinstance(T, float)
@@ -46,7 +46,7 @@ def test_array_input_returns_array_output():
     num = 5
     h = np.zeros(5)  # km
 
-    T, p, rho = std(h)
+    T, p, rho = atm(h)
 
     # Reads: "Assert if the length of T equals num"
     # Notice that T has to be a sequence in the first place or len(T)
@@ -59,7 +59,7 @@ def test_array_input_returns_array_output():
 def test_emits_warning_for_altitude_outside_range(recwarn):
     h = -1.0  # km
 
-    std(h)
+    atm(h)
     warning = recwarn.pop(RuntimeWarning)
 
     assert issubclass(warning.category, RuntimeWarning)
@@ -68,7 +68,7 @@ def test_emits_warning_for_altitude_outside_range(recwarn):
 def test_values_outside_range_are_nan():
     h = np.array([-1.0, 0.0])  # km
 
-    T, p, rho = std(h)
+    T, p, rho = atm(h)
 
     assert_equal(T[0], np.nan)
     assert_equal(p[0], np.nan)
@@ -105,7 +105,7 @@ def test_results_under_11km():
                              0.36392
     ])  # kg / m3
 
-    T, p, rho = std(h)
+    T, p, rho = atm(h)
 
     assert_array_almost_equal(T, expected_T, decimal=3)
     assert_array_almost_equal(p, expected_p, decimal=-1)
