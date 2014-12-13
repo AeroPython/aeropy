@@ -6,6 +6,7 @@ Created on Sat Dec 13 21:25:16 2014
 """
 
 import numpy as np
+import warnings
 
 
 R_a = 287.05287    # J/(Kg·K)
@@ -24,7 +25,7 @@ def layer(h0, T0, P0, alpha):
     Parameters
     ----------
     h0 : float
-        Initial heigth of the layer [m].
+        Initial height of the layer [m].
     T0 : float
         Initial temperature of the layer [K].
     P0 : float
@@ -35,7 +36,7 @@ def layer(h0, T0, P0, alpha):
     Returns
     -------
     out : func
-        function that accepts heigth as input
+        function that accepts height as input
         and returns T, P, rho.
 
     Notes
@@ -97,7 +98,7 @@ def atm(h, deltaT=0.0, adim=False):
     Parameters
     ----------
     h : float, ndarray
-        heigth or heigths for variables calculation.
+        height or heights for variables calculation.
     deltaT : float, optional
         Set a temperature offset. Not verified results!!
     adim : bool, optional
@@ -106,13 +107,16 @@ def atm(h, deltaT=0.0, adim=False):
     Returns
     -------
     T : float, ndarray
-        Temperature [K] for each heigth in h.
+        Temperature [K] for each height in h.
     P : float, ndarray
-        Pressure [Pa] for each heigth in h.
+        Pressure [Pa] for each height in h.
     rho : float, ndarray
-        Density [kg/m^3] for each heigth in h.
+        Density [kg/m^3] for each height in h.
 
     """
+
+    if any(h) < 0.0:
+        warnings.warn("Altitude value outside range", RuntimeWarning)
 
     # First layer: Troposphere
     # 0 m < h <= 11000 m
