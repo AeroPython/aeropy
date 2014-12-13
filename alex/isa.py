@@ -116,17 +116,16 @@ def atm(h, deltaT=0.0, adim=False):
     """
 
     if hasattr(h, '__iter__'):
-        
+
         h = np.asarray(h)
-        
+
         if any(h) < 0 or any(h) > 32000:
             warnings.warn("Altitude value outside range", RuntimeWarning)
-    
+
     else:
-        
-        if  h > 32000 or h < 0:
+
+        if h > 32000 or h < 0:
             warnings.warn("Altitude value outside range", RuntimeWarning)
-            
 
     # First layer: Troposphere
     # 0 m < h <= 11000 m
