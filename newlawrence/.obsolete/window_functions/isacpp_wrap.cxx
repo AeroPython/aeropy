@@ -2936,9 +2936,8 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 #define SWIGTYPE_p_ISACpp swig_types[0]
 #define SWIGTYPE_p_char swig_types[1]
-#define SWIGTYPE_p_unsigned_int swig_types[2]
-static swig_type_info *swig_types[4];
-static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3048,9 +3047,6 @@ namespace swig {
 
 
 #include <complex> 
-
-
-typedef unsigned int uint;
 
 
 SWIGINTERNINLINE PyObject*
@@ -3658,9 +3654,9 @@ SWIGINTERN PyObject *_wrap_ISACpp_T(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   PyObject *resultobj = 0;
   ISACpp *arg1 = (ISACpp *) 0 ;
   double *arg2 = (double *) 0 ;
-  uint arg3 ;
+  int arg3 ;
   double *arg4 = (double *) 0 ;
-  uint arg5 ;
+  int arg5 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyArrayObject *array2 = NULL ;
@@ -3722,9 +3718,9 @@ SWIGINTERN PyObject *_wrap_ISACpp_p(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   PyObject *resultobj = 0;
   ISACpp *arg1 = (ISACpp *) 0 ;
   double *arg2 = (double *) 0 ;
-  uint arg3 ;
+  int arg3 ;
   double *arg4 = (double *) 0 ;
-  uint arg5 ;
+  int arg5 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyArrayObject *array2 = NULL ;
@@ -3786,9 +3782,9 @@ SWIGINTERN PyObject *_wrap_ISACpp_rho(PyObject *SWIGUNUSEDPARM(self), PyObject *
   PyObject *resultobj = 0;
   ISACpp *arg1 = (ISACpp *) 0 ;
   double *arg2 = (double *) 0 ;
-  uint arg3 ;
+  int arg3 ;
   double *arg4 = (double *) 0 ;
-  uint arg5 ;
+  int arg5 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyArrayObject *array2 = NULL ;
@@ -3890,22 +3886,18 @@ static PyMethodDef SwigMethods[] = {
 
 static swig_type_info _swigt__p_ISACpp = {"_p_ISACpp", "ISACpp *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "unsigned int *|uint *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_ISACpp,
   &_swigt__p_char,
-  &_swigt__p_unsigned_int,
 };
 
 static swig_cast_info _swigc__p_ISACpp[] = {  {&_swigt__p_ISACpp, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_ISACpp,
   _swigc__p_char,
-  _swigc__p_unsigned_int,
 };
 
 
@@ -4593,7 +4585,7 @@ SWIG_init(void) {
   
   import_array();
   
-  SWIG_Python_SetConstant(d, "layers",SWIG_From_int(static_cast< int >(4)));
+  SWIG_Python_SetConstant(d, "layers",SWIG_From_int(static_cast< int >(9)));
   PyDict_SetItemString(md,(char*)"cvar", SWIG_globals());
   SWIG_addvarlink(SWIG_globals(),(char*)"R",Swig_var_R_get, Swig_var_R_set);
   SWIG_addvarlink(SWIG_globals(),(char*)"g",Swig_var_g_get, Swig_var_g_set);

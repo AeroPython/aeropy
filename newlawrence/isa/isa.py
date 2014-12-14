@@ -3,7 +3,7 @@ import numpy as np
 from isa.isacpp import ISACpp
 
 blimit = 0.
-tlimit = 90000.
+tlimit = 32162.
 
 def std(h, dT=0.):
 

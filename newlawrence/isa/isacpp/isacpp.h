@@ -1,46 +1,45 @@
 #ifndef ISACPP_H
 #define ISACPP_H
 
-#define layers 9
+#define layers 4
 
-typedef const double cdouble;
+typedef unsigned int uint;
 
-cdouble R = 287.05;
-cdouble g = 9.80665;
+const double R = 287.05287;
+const double g = 9.80665;
 
 class ISACpp {
 
-    double _dT;
-    double al[layers] = {-0.00649, 0., 0.00099, 0.00277,
-                         0., -0.00275,-0.00196, 0., 0.};
-    double hl[layers] = {0., 11019., 20063., 32162., 47350.,
-                         51413., 71802., 86000., 90000.};
+    double dT;
+    static const double al[layers];
+    static const double hl[layers];
     double Tl[layers];
     double pl[layers];
     double rhol[layers];
 
-    ISACpp(const ISACpp &other);
+    ISACpp(const ISACpp &other);    // No copy constructor allowed
 
-    double Ts(cdouble &h, cdouble &h0, cdouble &a0, cdouble &T0) const;
-    double ps(cdouble &h, cdouble &h0, cdouble &a0, cdouble &T0,
-              cdouble &p0) const;
-    double rhos(cdouble &h, cdouble &h0, cdouble &a0, cdouble &T0,
-                cdouble &rho0) const;
+    double Ts(double h, double h0, double a0, double T0) const;
+    double ps(double h, double h0, double a0, double T0,
+              double p0) const;
+    double rhos(double h, double h0, double a0, double T0,
+                double rho0) const;
 
-    double T(cdouble &h) const;
-    double p(cdouble &h) const;
-    double rho(cdouble &h) const;
+    double T(double h) const;
+    double p(double h) const;
+    double rho(double h) const;
 
-    double sgn(cdouble &x) const;
-    double d(cdouble &x) const;
-    double u(cdouble &x) const;
+    double sgn(double x) const;
+    double d(double x) const;
+    double u(double x) const;
+    uint select(double h) const;
 
 public:
 
-    ISACpp(double dT = 0.);
-    int T(double *h, int n_h, double *T, int n_T);
-    int p(double *h, int n_h, double *p, int n_T);
-    int rho(double *h, int n_h, double *rho, int n_T);
+    ISACpp(double delta_T = 0.);
+    int T(double *h, uint n_h, double *T, uint n_T);
+    int p(double *h, uint n_h, double *p, uint n_T);
+    int rho(double *h, uint n_h, double *rho, uint n_T);
 };
 
 #endif

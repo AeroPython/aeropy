@@ -76,8 +76,8 @@ class ISACpp(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, ISACpp, name)
     __repr__ = _swig_repr
-    def __init__(self, dT=0.): 
-        this = _isacpp.new_ISACpp(dT)
+    def __init__(self, delta_T=0.): 
+        this = _isacpp.new_ISACpp(delta_T)
         try: self.this.append(this)
         except: self.this = this
     def T(self, *args): return _isacpp.ISACpp_T(self, *args)

@@ -1,0 +1,8 @@
+· Changes to version 1.1.0:
+
+    - Model trimed to just only three layers (troposphere, tropopause and
+        stratosphere).
+    - Switched from a window functions based model to a layer selector.
+    - Doubled size allowed for numpy arrays (switched from int to unsigned
+        ints for indexes).
+    - Code clean up.
