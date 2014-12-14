@@ -38,7 +38,7 @@ double ISACpp::Ts(double h, double h0, double a0, double T0) const {
 double ISACpp::ps(double h, double h0, double a0, double T0,
                   double p0) const {
 
-    double p = 0;
+    double p;
 
     if(d(a0))    // 1 if T grad is 0
         p = p0 * exp(-g * (h - h0) / (R * T0));
@@ -51,7 +51,7 @@ double ISACpp::ps(double h, double h0, double a0, double T0,
 double ISACpp::rhos(double h, double h0, double a0, double T0,
                     double rho0) const {
 
-    double rho = 0;
+    double rho;
 
     if(d(a0))    // 1 if T grad is 0
         rho = rho0 * exp(-g * (h - h0) / (R * T0));
@@ -64,7 +64,7 @@ double ISACpp::rhos(double h, double h0, double a0, double T0,
 double ISACpp::T(double h) const {
  
     uint l = select(h);
-    double T = 0;
+    double T;
     
     T = Ts(h, hl[l], al[l], Tl[l]);
 
@@ -74,7 +74,7 @@ double ISACpp::T(double h) const {
 double ISACpp::p(double h) const {
  
     uint l = select(h);
-    double p = 0;
+    double p;
 
     p = ps(h, hl[l], al[l], Tl[l], pl[l]);
 
@@ -84,7 +84,7 @@ double ISACpp::p(double h) const {
 double ISACpp::rho(double h) const {
  
     uint l = select(h);
-    double rho = 0;
+    double rho;
 
     rho = rhos(h, hl[l], al[l], Tl[l], rhol[l]);
 
@@ -93,17 +93,23 @@ double ISACpp::rho(double h) const {
 
 int ISACpp::T(double *h, uint n_h, double *T, uint n_T) {
 
+    int error = 0;    // Error flag
+
     if(n_h != n_T)
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
         if(h[i] >= 0.)
             T[i] = this->T(h[i]);
+        else
+            error = 1;
 
-    return 0;    // Everything OK
+    return error;    // Everything OK
 }
 
 int ISACpp::p(double *h, uint n_h, double *p, uint n_T) {
+
+    int error = 0;    // Error flag
 
     if(n_h != n_T)
         return -1;    // Dimensions mismatch
@@ -111,11 +117,15 @@ int ISACpp::p(double *h, uint n_h, double *p, uint n_T) {
     for(uint i = 0; i < n_h; i++)
         if(h[i] >= 0.)
             p[i] = this->p(h[i]);
+        else
+            error = 1;
 
-    return 0;    // Everything OK
+    return error;    // Everything OK
 }
 
 int ISACpp::rho(double *h, uint n_h, double *rho, uint n_T) {
+
+    int error = 0;    // Error flag
 
     if(n_h != n_T)
         return -1;    // Dimensions mismatch
@@ -123,8 +133,10 @@ int ISACpp::rho(double *h, uint n_h, double *rho, uint n_T) {
     for(uint i = 0; i < n_h; i++)
         if(h[i] >= 0.)
             rho[i] = this->rho(h[i]);
+        else
+            error = 1;
 
-    return 0;    // Everything OK
+    return error;    // Everything OK
 }
 
 double ISACpp::sgn(double x) const {
@@ -148,6 +160,7 @@ double ISACpp::u(double x) const {
 uint ISACpp::select(double h) const {
 
     uint i;
+
     for(uint j = 0; j < layers - 1; j++) {
         i = (j + 1) * (u(h - hl[j]) - u(h - hl[j + 1]));
         if(i > 0)

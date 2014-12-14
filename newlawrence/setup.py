@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 import numpy
 
-version = '1.1.0'
+version = '1.1.1'
 
 base_name = 'isa'
 

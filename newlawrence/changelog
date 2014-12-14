@@ -1,3 +1,7 @@
+· Changes to version 1.1.1:
+
+    - C++ interface now returns -1 when dealing with negative altitudes.
+
 · Changes to version 1.1.0:
 
     - Model trimed to just only three layers (troposphere, tropopause and
