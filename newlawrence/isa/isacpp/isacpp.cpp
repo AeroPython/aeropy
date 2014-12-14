@@ -6,10 +6,8 @@
 using namespace std;
 
 const double ISACpp::al[layers] = {-0.0065,  0.0000, 0.0010, 0.0028}; 
-// To extend the model: 0.0000, -0.0028, -0.0020, 0.0000, 0.0000
 
-const double ISACpp::hl[layers] = {    0., 11019., 20063., 32162.};
-// To extend the model: 47350., 51413., 71802., 86000., 90000.
+const double ISACpp::hl[layers] = {    0., 11000., 20000., 32000.};
 
 ISACpp::ISACpp(const ISACpp &original) {}
 

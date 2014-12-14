@@ -3,9 +3,9 @@ import numpy as np
 from isa.isacpp import ISACpp
 
 blimit = 0.
-tlimit = 32162.
+tlimit = 32000.
 
-def std(h, dT=0.):
+def atm(h, dT=0.):
 
     h = np.asarray(h, dtype=np.float64, order='c').flatten()
     dT = np.float64(dT)
