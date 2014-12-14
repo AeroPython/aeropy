@@ -1,0 +1,5 @@
+To get the module working without a local installation just type:
+
+    python setup.py build_ext --inplace
+
+This will allow to use the module from its base folder for testing.
