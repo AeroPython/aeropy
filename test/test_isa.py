@@ -110,3 +110,61 @@ def test_results_under_11km():
     assert_array_almost_equal(T, expected_T, decimal=3)
     assert_array_almost_equal(p, expected_p, decimal=-1)
     assert_array_almost_equal(rho, expected_rho, decimal=4)
+
+
+def test_results_under_20km():
+    h = np.array([12000,
+                  14200,
+                  17500,
+                  20000
+    ])  # m
+    expected_T = np.array([216.650,
+                           216.650,
+                           216.650,
+                           216.650,
+    ])  # K
+    expected_p = np.array([19330.0,
+                           13663.0,
+                           8120.5,
+                           5474.8
+    ])  # Pa
+    expected_rho = np.array([0.31083,
+                             0.21971,
+                             0.13058,
+                             0.088035
+    ])  # kg / m3
+
+    T, p, rho = atm(h)
+
+    assert_array_almost_equal(T, expected_T, decimal=3)
+    assert_array_almost_equal(p, expected_p, decimal=0)
+    assert_array_almost_equal(rho, expected_rho, decimal=5)
+
+
+def test_results_under_32km():
+    h = np.array([22100,
+                  24000,
+                  28800,
+                  32000
+    ])  # m
+    expected_T = np.array([218.750,
+                           220.650,
+                           225.450,
+                           228.650
+    ])  # K
+    expected_p = np.array([3937.7,
+                           2930.4,
+                           1404.8,
+                           868.01
+    ])  # Pa
+    expected_rho = np.array([0.062711,
+                             0.046267,
+                             0.021708,
+                             0.013225
+    ])  # kg / m3
+
+    T, p, rho = atm(h)
+
+    assert_array_almost_equal(T, expected_T, decimal=3)
+    assert_array_almost_equal(p, expected_p, decimal=1)
+    assert_array_almost_equal(rho, expected_rho, decimal=5)
