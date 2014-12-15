@@ -25,10 +25,6 @@ class ISACpp {
     double rhos(double h, double h0, double a0, double T0,
                 double rho0) const;
 
-    double T(double h) const;
-    double p(double h) const;
-    double rho(double h) const;
-
     double sgn(double x) const;
     double d(double x) const;
     double u(double x) const;

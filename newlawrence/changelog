@@ -1,3 +1,7 @@
+· Changes to version 1.2.2:
+
+    - Speed up. Deleted unnecessary intermediate calls.
+
 · Changes to version 1.2.1:
 
     - Speed up. Bounds checking transfered to C++ side.

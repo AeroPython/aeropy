@@ -59,46 +59,19 @@ double ISACpp::rhos(double h, double h0, double a0, double T0,
     return rho;
 }
 
-double ISACpp::T(double h) const {
- 
-    uint l = select(h);
-    double T;
-    
-    T = Ts(h, hl[l], al[l], Tl[l]);
-
-    return T;
-}
-
-double ISACpp::p(double h) const {
- 
-    uint l = select(h);
-    double p;
-
-    p = ps(h, hl[l], al[l], Tl[l], pl[l]);
-
-    return p;
-}
-
-double ISACpp::rho(double h) const {
- 
-    uint l = select(h);
-    double rho;
-
-    rho = rhos(h, hl[l], al[l], Tl[l], rhol[l]);
-
-    return rho;
-}
-
 int ISACpp::T(double *h, uint n_h, double *T, uint n_T) {
 
     int error = 0;    // Error flag
+    uint l;
 
     if(n_h != n_T)
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
-        if((h[i] >= 0.) && (h[i] <= hl[layers - 1]))
-            T[i] = this->T(h[i]);
+        if((h[i] >= 0.) && (h[i] <= hl[layers - 1])) {
+            l = select(h[i]);
+            T[i] = Ts(h[i], hl[l], al[l], Tl[l]);
+        }
         else {
             T[i] = numeric_limits<double>::quiet_NaN();
             error = 1;    // Out of bounds
@@ -110,13 +83,16 @@ int ISACpp::T(double *h, uint n_h, double *T, uint n_T) {
 int ISACpp::p(double *h, uint n_h, double *p, uint n_T) {
 
     int error = 0;    // Error flag
+    uint l;
 
     if(n_h != n_T)
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
-        if((h[i] >= 0.) && (h[i] <= hl[layers - 1]))
-            p[i] = this->p(h[i]);
+        if((h[i] >= 0.) && (h[i] <= hl[layers - 1])) {
+            l = select(h[i]);
+            p[i] = ps(h[i], hl[l], al[l], Tl[l], pl[l]);
+        }
         else {
             p[i] = numeric_limits<double>::quiet_NaN();
             error = 1;    // Out of bounds
@@ -128,13 +104,16 @@ int ISACpp::p(double *h, uint n_h, double *p, uint n_T) {
 int ISACpp::rho(double *h, uint n_h, double *rho, uint n_T) {
 
     int error = 0;    // Error flag
+    uint l;
 
     if(n_h != n_T)
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
-        if((h[i] >= 0.) && (h[i] <= hl[layers - 1]))
-            rho[i] = this->rho(h[i]);
+        if((h[i] >= 0.) && (h[i] <= hl[layers - 1])) {
+            l = select(h[i]);
+            rho[i] = rhos(h[i], hl[l], al[l], Tl[l], rhol[l]);
+        }
         else {
             rho[i] = numeric_limits<double>::quiet_NaN();
             error = 1;    // Out of bounds
