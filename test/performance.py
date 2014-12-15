@@ -4,8 +4,6 @@ import imp
 from functools import wraps
 from timeit import repeat
 
-import numpy as np
-
 size = [1, 10, 100, 1000, 10000]
 ignore_folders = ['.git', 'test']
 test_folder = 'test'
@@ -38,7 +36,7 @@ def get_folders():
 
 
 @path_to_project
-def performance(name, size, number=100):
+def performance(name, size, number=1):
 
     # Subtitute of shutil.copytree which gives an error
     def copytree(src, dst):
@@ -67,16 +65,17 @@ def performance(name, size, number=100):
     imp.reload(isa)
 
     times = []
-    for iteration in size:
-        iteration = int(iteration)
-        if iteration == 1:
+    for element in size:
+        element = int(element)
+        if element == 1:
             time = repeat('atm(0.)', setup='from isa import atm',
                           number=number, repeat=3)
-        elif iteration > 1:
-            h = np.linspace(0., 11000., iteration)
-            time = repeat('atm(array({}))'.format(h.tolist()),
+        elif element > 1:
+            time = repeat('atm(h)',
                           setup='from isa import atm\n'
-                                'from numpy import array',
+                                'from numpy import linspace\n'
+                                'h = linspace(0., 11000., {})'
+                                .format(element),
                           number=number, repeat=3)
         time = 1e3 * min(time) / number
         times.append(time)
@@ -107,6 +106,6 @@ if __name__ == '__main__':
             line = '{:>7} '.format(size[i])
             for name in test.keys():
                 line += '{:12.3f} ms '.format(test[name][i])
-                print(line)
+            print(line)
     else:
         print('No files found.')
