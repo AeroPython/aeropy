@@ -1,5 +1,5 @@
 import os
-import shutil
+import sys
 import imp
 from functools import wraps
 from timeit import repeat
@@ -36,27 +36,10 @@ def get_folders():
 
 
 @path_to_project
-def performance(name, size, number=1):
+def performance(name, size, loops=100):
 
-    # Subtitute of shutil.copytree which gives an error
-    def copytree(src, dst):
-        if not os.path.exists(dst):
-            os.makedirs(dst)
-        for item in os.listdir(src):
-            s = os.path.join(src, item)
-            d = os.path.join(dst, item)
-            if os.path.isdir(s):
-                copytree(s, d)
-            else:
-                if not os.path.exists(d) or \
-                        os.stat(src).st_mtime - os.stat(dst).st_mtime > 1:
-                    shutil.copy2(s, d)
-
-    test_path = os.path.join(os.getcwd(), test_folder)
-    os.chdir(name)
-    copied = os.listdir()
-    copytree(os.getcwd(), test_path)
-    os.chdir(test_path)
+    libpath = os.path.join(os.getcwd(), name)
+    sys.path.append(libpath)
 
     try:
         atm
@@ -69,22 +52,18 @@ def performance(name, size, number=1):
         element = int(element)
         if element == 1:
             time = repeat('atm(0.)', setup='from isa import atm',
-                          number=number, repeat=3)
+                          number=loops, repeat=3)
         elif element > 1:
             time = repeat('atm(h)',
                           setup='from isa import atm\n'
                                 'from numpy import linspace\n'
                                 'h = linspace(0., 11000., {})'
                                 .format(element),
-                          number=number, repeat=3)
-        time = 1e3 * min(time) / number
+                          number=loops, repeat=3)
+        time = 1e3 * min(time) / loops
         times.append(time)
 
-    for item in copied:
-        if(os.path.isdir(item)):
-            shutil.rmtree(item)
-        else:
-            os.remove(item)
+    sys.path.remove(libpath)
 
     return times
 
