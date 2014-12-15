@@ -2,9 +2,6 @@ import warnings
 import numpy as np
 from isa.isacpp import ISACpp
 
-blimit = 0.
-tlimit = 32000.
-
 def atm(h, dT=0.):
 
     h = np.asarray(h, dtype=np.float64, order='c').flatten()
@@ -14,19 +11,13 @@ def atm(h, dT=0.):
     p = np.empty(h.shape)
     rho = np.empty(h.shape)
 
+    error = 0
     ISA = ISACpp(dT)
-    ISA.T(h, T)
-    ISA.p(h, p)
-    ISA.rho(h, rho)
-
-    
-    mask1 = h < blimit
-    mask2 = h > tlimit
-    if mask1.any() or mask2.any():
+    error += ISA.T(h, T)
+    error += ISA.p(h, p)
+    error += ISA.rho(h, rho)
+    if(error > 0):
         warnings.warn("Altitude value outside range", RuntimeWarning)
-        for item in (T, p, rho):
-            item[mask1] = np.nan
-            item[mask2] = np.nan
 
     if h.shape[0] == 1:
         return T.item(), p.item(), rho.item()

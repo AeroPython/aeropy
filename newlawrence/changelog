@@ -1,3 +1,7 @@
+· Changes to version 1.2.1:
+
+    - Speed up. Bounds checking transfered to C++ side.
+
 · Changes to version 1.2.0:
 
     - Changed name from "std" funcion to "atm" function.
@@ -5,7 +9,7 @@
 
 · Changes to version 1.1.1:
 
-    - C++ interface now returns -1 when dealing with negative altitudes.
+    - C++ interface now returns 1 when dealing with negative altitudes.
 
 · Changes to version 1.1.0:
 

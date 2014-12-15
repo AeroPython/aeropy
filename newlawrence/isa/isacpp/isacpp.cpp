@@ -1,5 +1,5 @@
+#include <limits>
 #include <cmath>
-#include <iostream>
 
 #include "isacpp.h"
 
@@ -97,10 +97,12 @@ int ISACpp::T(double *h, uint n_h, double *T, uint n_T) {
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
-        if(h[i] >= 0.)
+        if((h[i] >= 0.) && (h[i] <= hl[layers - 1]))
             T[i] = this->T(h[i]);
-        else
-            error = 1;
+        else {
+            T[i] = numeric_limits<double>::quiet_NaN();
+            error = 1;    // Out of bounds
+        }
 
     return error;    // Everything OK
 }
@@ -113,10 +115,12 @@ int ISACpp::p(double *h, uint n_h, double *p, uint n_T) {
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
-        if(h[i] >= 0.)
+        if((h[i] >= 0.) && (h[i] <= hl[layers - 1]))
             p[i] = this->p(h[i]);
-        else
-            error = 1;
+        else {
+            p[i] = numeric_limits<double>::quiet_NaN();
+            error = 1;    // Out of bounds
+        }
 
     return error;    // Everything OK
 }
@@ -129,10 +133,12 @@ int ISACpp::rho(double *h, uint n_h, double *rho, uint n_T) {
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
-        if(h[i] >= 0.)
+        if((h[i] >= 0.) && (h[i] <= hl[layers - 1]))
             rho[i] = this->rho(h[i]);
-        else
-            error = 1;
+        else {
+            rho[i] = numeric_limits<double>::quiet_NaN();
+            error = 1;    // Out of bounds
+        }
 
     return error;    // Everything OK
 }
