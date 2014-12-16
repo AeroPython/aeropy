@@ -80,9 +80,7 @@ class ISACpp(_object):
         this = _isacpp.new_ISACpp(delta_T)
         try: self.this.append(this)
         except: self.this = this
-    def T(self, *args): return _isacpp.ISACpp_T(self, *args)
-    def p(self, *args): return _isacpp.ISACpp_p(self, *args)
-    def rho(self, *args): return _isacpp.ISACpp_rho(self, *args)
+    def atm(self, *args): return _isacpp.ISACpp_atm(self, *args)
     __swig_destroy__ = _isacpp.delete_ISACpp
     __del__ = lambda self : None;
 ISACpp_swigregister = _isacpp.ISACpp_swigregister

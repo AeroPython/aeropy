@@ -33,9 +33,9 @@ class ISACpp {
 public:
 
     ISACpp(double delta_T = 0.);
-    int T(double *h, uint n_h, double *T, uint n_T);
-    int p(double *h, uint n_h, double *p, uint n_T);
-    int rho(double *h, uint n_h, double *rho, uint n_T);
+    int atm(double *h, uint n_h, double *T, uint n_T,
+            double *p, uint n_p, double *rho, uint n_rho);
+
 };
 
 #endif

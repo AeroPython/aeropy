@@ -11,11 +11,8 @@ def atm(h, dT=0.):
     p = np.empty(h.shape)
     rho = np.empty(h.shape)
 
-    error = 0
     ISA = ISACpp(dT)
-    error += ISA.T(h, T)
-    error += ISA.p(h, p)
-    error += ISA.rho(h, rho)
+    error = ISA.atm(h, T, p, rho)
     if(error > 0):
         warnings.warn("Altitude value outside range", RuntimeWarning)
 

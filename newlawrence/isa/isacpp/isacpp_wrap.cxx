@@ -3654,28 +3654,38 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ISACpp_T(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_ISACpp_atm(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ISACpp *arg1 = (ISACpp *) 0 ;
   double *arg2 = (double *) 0 ;
   uint arg3 ;
   double *arg4 = (double *) 0 ;
   uint arg5 ;
+  double *arg6 = (double *) 0 ;
+  uint arg7 ;
+  double *arg8 = (double *) 0 ;
+  uint arg9 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyArrayObject *array2 = NULL ;
   int is_new_object2 = 0 ;
   PyArrayObject *array4 = NULL ;
   int i4 = 1 ;
+  PyArrayObject *array6 = NULL ;
+  int i6 = 1 ;
+  PyArrayObject *array8 = NULL ;
+  int i8 = 1 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:ISACpp_T",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:ISACpp_atm",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ISACpp, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ISACpp_T" "', argument " "1"" of type '" "ISACpp *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ISACpp_atm" "', argument " "1"" of type '" "ISACpp *""'"); 
   }
   arg1 = reinterpret_cast< ISACpp * >(argp1);
   {
@@ -3698,135 +3708,23 @@ SWIGINTERN PyObject *_wrap_ISACpp_T(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
     arg5 = 1;
     for (i4=0; i4 < array_numdims(array4); ++i4) arg5 *= array_size(array4,i4);
   }
-  result = (int)(arg1)->T(arg2,arg3,arg4,arg5);
-  resultobj = SWIG_From_int(static_cast< int >(result));
   {
-    if (is_new_object2 && array2)
-    {
-      Py_DECREF(array2); 
-    }
-  }
-  return resultobj;
-fail:
-  {
-    if (is_new_object2 && array2)
-    {
-      Py_DECREF(array2); 
-    }
-  }
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_ISACpp_p(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  ISACpp *arg1 = (ISACpp *) 0 ;
-  double *arg2 = (double *) 0 ;
-  uint arg3 ;
-  double *arg4 = (double *) 0 ;
-  uint arg5 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyArrayObject *array2 = NULL ;
-  int is_new_object2 = 0 ;
-  PyArrayObject *array4 = NULL ;
-  int i4 = 1 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:ISACpp_p",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ISACpp, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ISACpp_p" "', argument " "1"" of type '" "ISACpp *""'"); 
-  }
-  arg1 = reinterpret_cast< ISACpp * >(argp1);
-  {
-    npy_intp size[1] = {
-      -1 
-    };
-    array2 = obj_to_array_contiguous_allow_conversion(obj1,
-      NPY_DOUBLE,
-      &is_new_object2);
-    if (!array2 || !require_dimensions(array2, 1) ||
-      !require_size(array2, size, 1)) SWIG_fail;
-    arg2 = (double*) array_data(array2);
-    arg3 = (int) array_size(array2,0);
+    array6 = obj_to_array_no_conversion(obj3, NPY_DOUBLE);
+    if (!array6 || !require_dimensions(array6,1) || !require_contiguous(array6)
+      || !require_native(array6)) SWIG_fail;
+    arg6 = (double*) array_data(array6);
+    arg7 = 1;
+    for (i6=0; i6 < array_numdims(array6); ++i6) arg7 *= array_size(array6,i6);
   }
   {
-    array4 = obj_to_array_no_conversion(obj2, NPY_DOUBLE);
-    if (!array4 || !require_dimensions(array4,1) || !require_contiguous(array4)
-      || !require_native(array4)) SWIG_fail;
-    arg4 = (double*) array_data(array4);
-    arg5 = 1;
-    for (i4=0; i4 < array_numdims(array4); ++i4) arg5 *= array_size(array4,i4);
+    array8 = obj_to_array_no_conversion(obj4, NPY_DOUBLE);
+    if (!array8 || !require_dimensions(array8,1) || !require_contiguous(array8)
+      || !require_native(array8)) SWIG_fail;
+    arg8 = (double*) array_data(array8);
+    arg9 = 1;
+    for (i8=0; i8 < array_numdims(array8); ++i8) arg9 *= array_size(array8,i8);
   }
-  result = (int)(arg1)->p(arg2,arg3,arg4,arg5);
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  {
-    if (is_new_object2 && array2)
-    {
-      Py_DECREF(array2); 
-    }
-  }
-  return resultobj;
-fail:
-  {
-    if (is_new_object2 && array2)
-    {
-      Py_DECREF(array2); 
-    }
-  }
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_ISACpp_rho(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  ISACpp *arg1 = (ISACpp *) 0 ;
-  double *arg2 = (double *) 0 ;
-  uint arg3 ;
-  double *arg4 = (double *) 0 ;
-  uint arg5 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyArrayObject *array2 = NULL ;
-  int is_new_object2 = 0 ;
-  PyArrayObject *array4 = NULL ;
-  int i4 = 1 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:ISACpp_rho",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ISACpp, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ISACpp_rho" "', argument " "1"" of type '" "ISACpp *""'"); 
-  }
-  arg1 = reinterpret_cast< ISACpp * >(argp1);
-  {
-    npy_intp size[1] = {
-      -1 
-    };
-    array2 = obj_to_array_contiguous_allow_conversion(obj1,
-      NPY_DOUBLE,
-      &is_new_object2);
-    if (!array2 || !require_dimensions(array2, 1) ||
-      !require_size(array2, size, 1)) SWIG_fail;
-    arg2 = (double*) array_data(array2);
-    arg3 = (int) array_size(array2,0);
-  }
-  {
-    array4 = obj_to_array_no_conversion(obj2, NPY_DOUBLE);
-    if (!array4 || !require_dimensions(array4,1) || !require_contiguous(array4)
-      || !require_native(array4)) SWIG_fail;
-    arg4 = (double*) array_data(array4);
-    arg5 = 1;
-    for (i4=0; i4 < array_numdims(array4); ++i4) arg5 *= array_size(array4,i4);
-  }
-  result = (int)(arg1)->rho(arg2,arg3,arg4,arg5);
+  result = (int)(arg1)->atm(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
   resultobj = SWIG_From_int(static_cast< int >(result));
   {
     if (is_new_object2 && array2)
@@ -3877,9 +3775,7 @@ SWIGINTERN PyObject *ISACpp_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObjec
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"new_ISACpp", _wrap_new_ISACpp, METH_VARARGS, NULL},
-	 { (char *)"ISACpp_T", _wrap_ISACpp_T, METH_VARARGS, NULL},
-	 { (char *)"ISACpp_p", _wrap_ISACpp_p, METH_VARARGS, NULL},
-	 { (char *)"ISACpp_rho", _wrap_ISACpp_rho, METH_VARARGS, NULL},
+	 { (char *)"ISACpp_atm", _wrap_ISACpp_atm, METH_VARARGS, NULL},
 	 { (char *)"delete_ISACpp", _wrap_delete_ISACpp, METH_VARARGS, NULL},
 	 { (char *)"ISACpp_swigregister", ISACpp_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }

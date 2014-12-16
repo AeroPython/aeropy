@@ -59,62 +59,25 @@ double ISACpp::rhos(double h, double h0, double a0, double T0,
     return rho;
 }
 
-int ISACpp::T(double *h, uint n_h, double *T, uint n_T) {
+int ISACpp::atm(double *h, uint n_h, double *T, uint n_T,
+                double *p, uint n_p, double *rho, uint n_rho) {
 
     int error = 0;    // Error flag
     uint l;
 
-    if(n_h != n_T)
+    if((n_h != n_T) && (n_h != n_p) && (n_h != n_rho))
         return -1;    // Dimensions mismatch
     
     for(uint i = 0; i < n_h; i++)
         if((h[i] >= 0.) && (h[i] <= hl[layers - 1])) {
             l = select(h[i]);
             T[i] = Ts(h[i], hl[l], al[l], Tl[l]);
-        }
-        else {
-            T[i] = numeric_limits<double>::quiet_NaN();
-            error = 1;    // Out of bounds
-        }
-
-    return error;    // Everything OK
-}
-
-int ISACpp::p(double *h, uint n_h, double *p, uint n_T) {
-
-    int error = 0;    // Error flag
-    uint l;
-
-    if(n_h != n_T)
-        return -1;    // Dimensions mismatch
-    
-    for(uint i = 0; i < n_h; i++)
-        if((h[i] >= 0.) && (h[i] <= hl[layers - 1])) {
-            l = select(h[i]);
             p[i] = ps(h[i], hl[l], al[l], Tl[l], pl[l]);
-        }
-        else {
-            p[i] = numeric_limits<double>::quiet_NaN();
-            error = 1;    // Out of bounds
-        }
-
-    return error;    // Everything OK
-}
-
-int ISACpp::rho(double *h, uint n_h, double *rho, uint n_T) {
-
-    int error = 0;    // Error flag
-    uint l;
-
-    if(n_h != n_T)
-        return -1;    // Dimensions mismatch
-    
-    for(uint i = 0; i < n_h; i++)
-        if((h[i] >= 0.) && (h[i] <= hl[layers - 1])) {
-            l = select(h[i]);
             rho[i] = rhos(h[i], hl[l], al[l], Tl[l], rhol[l]);
         }
         else {
+            T[i] = numeric_limits<double>::quiet_NaN();
+            p[i] = numeric_limits<double>::quiet_NaN();
             rho[i] = numeric_limits<double>::quiet_NaN();
             error = 1;    // Out of bounds
         }
