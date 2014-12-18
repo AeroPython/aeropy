@@ -1,3 +1,11 @@
+· Changes to version 1.4.0:
+
+    - Added parallelization support through OpenMP.
+    - Code reorganization. Math auxiliary functions splitted in separated
+      files.
+    - Improved support for compilation in non-posix systems.
+    - SWIG is now required when compiling.
+
 · Changes to version 1.3.0:
 
     - Speed up. C++ interface simplified.
@@ -22,8 +30,8 @@
 · Changes to version 1.1.0:
 
     - Model trimed to just only three layers (troposphere, tropopause and
-        stratosphere).
+      stratosphere).
     - Switched from a window functions based model to a layer selector.
     - Doubled size allowed for numpy arrays (switched from int to unsigned
-        ints for indexes).
+      ints for indexes).
     - Code clean up.
