@@ -4,7 +4,7 @@ import imp
 from functools import wraps
 from timeit import repeat
 
-size = [1, 10, 100, 1000, 10000]
+size = [1, 10, 100, 1000, 10000, 100000]
 ignore_folders = ['.git', 'test']
 test_folder = 'test'
 
@@ -75,16 +75,16 @@ if __name__ == '__main__':
         print('{} running...'.format(name))
         test[name] = performance(name, size)
 
-    line = 'size    '
+    line = '{:>7}'.format('size')
     name = None
     for name in test.keys():
-        line += '{:<15} '.format(name)
+        line += ' {:>15}'.format(name)
     if name is not None:
         print(line)
         for i in range(0, len(test[name])):
-            line = '{:>7} '.format(size[i])
+            line = '{:>7}'.format(size[i])
             for name in test.keys():
-                line += '{:12.3f} ms '.format(test[name][i])
+                line += ' {:12.3f} ms'.format(test[name][i])
             print(line)
     else:
         print('No files found.')
