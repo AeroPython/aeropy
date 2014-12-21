@@ -17,6 +17,10 @@ T_0 = 288.15
 P_0 = 101325
 rho_0 = P_0 / (R_a * T_0)
 
+# Used for altitude conversion
+# Mean earth radious
+r0 = 6356766    # m
+
 
 def layer(h0, T0, P0, alpha):
     """
@@ -173,3 +177,63 @@ def atm(h, deltaT=0.0, adim=False):
         rho /= rho_0
 
     return T, P, rho
+
+
+def geometric_2_geopotential(h):
+    """
+    Computes the geopotential altitude given the geometric altitude.
+    This function is based on ISA constants and is not a generalised definition
+    in which earth radious and gravitation change.
+
+    Parameters
+    ----------
+    h : float, ndarray
+        geometric height or heights to be converted.
+
+    Returns
+    -------
+    h : float, ndarray
+        geopotential height or heights.
+
+    """
+
+    if hasattr(h, '__iter__'):
+        h = np.asarray(h)
+        if any(h) < 0:
+            warnings.warn("Altitude value smaller than zero", RuntimeWarning)
+
+    else:
+        if h < 0:
+            warnings.warn("Altitude value outside range", RuntimeWarning)
+
+    return r0 * h / (r0 + h)
+
+
+def geopotential_2_geometric(h):
+    """
+    Computes the geometric altitude given the geopotential altitude.
+    This function is based on ISA constants and is not a generalised definition
+    in which earth radious and gravitation change.
+
+    Parameters
+    ----------
+    h : float, ndarray
+        geopotential height or heights to be converted.
+
+    Returns
+    -------
+    h : float, ndarray
+        geometric height or heights.
+
+    """
+
+    if hasattr(h, '__iter__'):
+        h = np.asarray(h)
+        if any(h) < 0:
+            warnings.warn("Altitude value smaller than zero", RuntimeWarning)
+
+    else:
+        if h < 0:
+            warnings.warn("Altitude value outside range", RuntimeWarning)
+
+    return r0 * h / (r0 - h)
