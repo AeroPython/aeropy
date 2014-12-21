@@ -237,3 +237,54 @@ def geopotential_2_geometric(h):
             warnings.warn("Altitude value outside range", RuntimeWarning)
 
     return r0 * h / (r0 - h)
+
+
+def barometric_altitude(p):
+    """
+    Computes the barometric altitude given the static pressure at that altitude
+
+    Parameters
+    ----------
+    p : float, ndarray
+        static pressure.
+
+    Returns
+    -------
+    h : float, ndarray
+        geopotential height.
+    """
+
+    if hasattr(p, '__iter__'):
+        p = np.asarray(p)
+        if any(p) < 868.02 or any(p) > 101325:
+            warnings.warn("Altitude value outside range", RuntimeWarning)
+
+    else:
+        if p > 868.02 or p < 101325:
+            warnings.warn("Altitude value outside range", RuntimeWarning)
+
+    # Parameters for different layers
+    layers_h = np.array([0, 11000, 20000, 32000])    # m
+    layers_p = np.array([101325, 22632, 5474.9, 868.02])    # Pa
+    layers_T = np.array([288.15, 216.65, 216.65])   # K
+    layers_alpha = np.array([-6.5e-3, 0, 1e-3])    # K/m
+
+    # True if the temperature gradient is linear, Flase if it is constant
+    layers_gradient = np.array([True, False, True])
+
+    # Identify current layer
+    layer = np.max(np.argwhere(p <= layers_p))
+
+    # Set layer parameters
+    h0 = layers_h[layer]
+    T0 = layers_T[layer]
+    P0 = layers_p[layer]
+    alpha = layers_alpha[layer]
+
+    if layers_gradient[layer]:
+        h = T0 / alpha * ((p / P0) ** (- R_a * alpha / g) - 1) + h0
+
+    else:
+        h = - R_a * T0 / g * np.log(p / P0) + h0
+
+    return h
