@@ -1,4 +1,4 @@
-ISA
-===
+aeropy
+======
 
-Standard Atmosphere in Python
+Python tools for Aeronautical calculations.
