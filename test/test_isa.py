@@ -14,7 +14,7 @@ from numpy.testing import (assert_equal, assert_almost_equal,
 
 import pytest
 
-from isa import atm
+from aeropy.atmosphere.isa import atm
 
 
 def test_sea_level():
