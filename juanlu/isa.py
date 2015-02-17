@@ -8,6 +8,8 @@ Author: Juan Luis Cano Rodríguez <juanlu001@gmail.com>
 import numpy as np
 import warnings
 
+from numba import njit
+
 # Constants
 R_a = 287.05287  # J/(Kg·K)
 g0 = 9.80665  # m/s^2
@@ -29,7 +31,7 @@ T2 = T1
 p2 = p1 * np.exp(-g0 * (20000.0 - 11000.0) / (R_a * T1))
 
 
-def atm(h, dT=0.0):
+def atm(h):
     """Standard atmosphere temperature, pressure and density.
 
     Parameters
@@ -44,21 +46,12 @@ def atm(h, dT=0.0):
     T = np.empty_like(h)
     p = np.empty_like(h)
     rho = np.empty_like(h)
-    for ii in range(h.size):
-        if h[ii] < 0.0:
-            warnings.warn("Altitude value outside range", RuntimeWarning)
-            T[ii] = np.nan
-            p[ii] = np.nan
-        elif 0.0 <= h[ii] < 11000.0:
-            T[ii] = T0 + alpha[0] * h[ii]
-            p[ii] = p0 * (T0 / (T0 + alpha[0] * h[ii])) ** (g0 / (R_a * alpha[0]))
-        elif 11000.0 <= h[ii] < 20000.0:
-            T[ii] = T1#  + alpha[1] * (h[ii] - 11000.0)
-            p[ii] = p1 * np.exp(-g0 * (h[ii] - 11000.0) / (R_a * T1))
-        elif 20000.0 <= h[ii] <= 32000.0:
-            T[ii] = T2 + alpha[2] * (h[ii] - 20000.0)
-            p[ii] = p2 * (T2 / (T2 + alpha[2] * (h[ii] - 20000.0))) ** (g0 / (R_a * alpha[2]))
-    rho = p / (R_a * T)
+
+    if any(h < 0.0):
+        warnings.warn("Altitude value outside range", RuntimeWarning)
+
+    # Actually compute the values
+    _atm(h, T, p, rho)
 
     if scalar:
         T = T[0]
@@ -66,3 +59,24 @@ def atm(h, dT=0.0):
         rho = rho[0]
 
     return T, p, rho
+
+
+@njit
+def _atm(h, T, p, rho):
+    for ii in range(h.size):
+        if h[ii] < 0.0:
+            T[ii] = np.nan
+            p[ii] = np.nan
+            rho[ii] = np.nan
+        elif 0.0 <= h[ii] < 11000.0:
+            T[ii] = T0 + alpha[0] * h[ii]
+            p[ii] = p0 * (T0 / (T0 + alpha[0] * h[ii])) ** (g0 / (R_a * alpha[0]))
+            rho[ii] = p[ii] / (R_a * T[ii])
+        elif 11000.0 <= h[ii] < 20000.0:
+            T[ii] = T1  #  + alpha[1] * (h[ii] - 11000.0)
+            p[ii] = p1 * np.exp(-g0 * (h[ii] - 11000.0) / (R_a * T1))
+            rho[ii] = p[ii] / (R_a * T[ii])
+        elif 20000.0 <= h[ii] <= 32000.0:
+            T[ii] = T2 + alpha[2] * (h[ii] - 20000.0)
+            p[ii] = p2 * (T2 / (T2 + alpha[2] * (h[ii] - 20000.0))) ** (g0 / (R_a * alpha[2]))
+            rho[ii] = p[ii] / (R_a * T[ii])
