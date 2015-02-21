@@ -3,7 +3,7 @@ aeropy - Xfoil Interaction tool
 
 Python tools for Aeronautical calculations.
 
-Genetic Optimization Algorithm in progress (python 3.4, xfoil6.99)
+Genetic Optimization Algorithm in progress (python 3.4, xfoil 6.99)
 
 Includes:
 
@@ -19,7 +19,9 @@ Genetic algorithm modules:
 
 -main (in progress)
 
-All 3 files must be in the same folder as xfoil.exe. Then, you can try the early version by executing main.py. It will decode an example genoma for 2 profiles, and then analize them with xfoil.
+-initial (in progress)
+
+All 4 files must be in the same folder as xfoil.exe. Then, you can try the early version by executing main.py. It will generate and decode an example genoma for 5 profiles, and then analize them with xfoil.
 
 More info: 
 https://docs.google.com/presentation/d/1_78ilFL-nbuN5KB5FmNeo-EIZly1PjqxqIB-ant-GfM/edit?usp=sharing
