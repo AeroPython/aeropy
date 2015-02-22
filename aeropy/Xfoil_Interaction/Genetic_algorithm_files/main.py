@@ -25,7 +25,7 @@ import initial as initial
 
 
 generation = 0
-starting_profiles = 5
+starting_profiles = 20
 
 genome = initial.start_pop(starting_profiles)
 
