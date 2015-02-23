@@ -52,6 +52,8 @@ def xfoil_calculate_profile(generation,profile_number,genome):
 
     perfil = trans.decode_genome(genome)
     
+    if not os.path.exists('profiles\gen' + str(generation)):
+        os.makedirs('profiles\gen' + str(generation))
     try:
         os.remove(profile_root)
     except :
@@ -60,6 +62,7 @@ def xfoil_calculate_profile(generation,profile_number,genome):
         os.remove("aerodata\data" + profile_name + '.txt')
     except :
         pass
+    
     
     
     archivo = open(profile_root, mode = 'x')

@@ -21,28 +21,13 @@ import os
 import interfaz as interfaz
 import numpy as np
 import initial as initial
-import genetics as genetics
 
-if not os.path.exists('aerodata'):
-        os.makedirs('aerodata')
 
-generation = 0
-starting_profiles = 30
-total_generations = 10
-num_parent = 4
-
-genome = initial.start_pop(starting_profiles)
-
-interfaz.xfoil_calculate_population(generation,genome)
-
-for generation in np.arange(0,total_generations,1):
+def selection(score, genome, num_parent):
+    invscore = 1- score
+    positions = np.argsort(invscore)
+    parents = np.zeros([num_parent,16])
+    for i in np.arange(0,num_parent,1):
+        parents[i,:] = genome[positions[i],:]
     
-    genome = genetics.genetic_step(genome,generation,num_parent)
-    
-    interfaz.xfoil_calculate_population(generation + 1,genome)
-    
-    
-    
-    
-    
-    
+    return parents

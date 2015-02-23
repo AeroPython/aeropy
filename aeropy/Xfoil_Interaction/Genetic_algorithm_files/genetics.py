@@ -21,28 +21,19 @@ import os
 import interfaz as interfaz
 import numpy as np
 import initial as initial
-import genetics as genetics
+import analice as analice
+import selection as selection
+import cross as cross
+import mutation as mutation
 
-if not os.path.exists('aerodata'):
-        os.makedirs('aerodata')
 
-generation = 0
-starting_profiles = 30
-total_generations = 10
-num_parent = 4
 
-genome = initial.start_pop(starting_profiles)
 
-interfaz.xfoil_calculate_population(generation,genome)
-
-for generation in np.arange(0,total_generations,1):
+def genetic_step(genome,generation,num_parent):
+    num_pop = genome.shape[0]
     
-    genome = genetics.genetic_step(genome,generation,num_parent)
-    
-    interfaz.xfoil_calculate_population(generation + 1,genome)
-    
-    
-    
-    
-    
-    
+    scores = analice.score(generation,num_pop)
+    parents = selection.selection(scores, genome, num_parent)
+    children = cross.cross(parents, num_pop)
+    children = mutation.mutation(children, generation, num_parent)
+    return children

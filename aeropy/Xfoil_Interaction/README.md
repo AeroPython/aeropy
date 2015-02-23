@@ -19,11 +19,29 @@ Genetic algorithm modules:
 
 -testing
 
--main (in progress)
+-main 
 
--initial (in progress)
+-initial 
 
-All 5 files must be in the same folder as xfoil.exe. Then, you can try the early version by executing main.py. It will generate and decode an example genoma for 20 profiles, test them in order to avoid inoperable profiles, and regenerate thosa that don't pass the test until there are 20. Then, the programe analize them with xfoil.
+-genetics
+
+-analice
+
+-cross
+
+-mutation
+
+-selection
+
+All 10 files must be in the same folder as xfoil.exe. 
+
+Execute the main.py file in order to start the algorithm.
+
+It will randomly generate 30 profiles and test if they are viable, those wich aren't will be regenerated until they are.
+
+They will be analiced with xfoil, and scored and sorted depending on the values they achieve.
+
+Then, the best 3 will be selected as parents for the next generation.
 
 More info: 
 https://docs.google.com/presentation/d/1_78ilFL-nbuN5KB5FmNeo-EIZly1PjqxqIB-ant-GfM/edit?usp=sharing
