@@ -25,19 +25,22 @@ import sys
 import os
 import transcript as trans
 import numpy as np
+import ambient as ambient
 
 
-def xfoil_calculate_profile(generation,profile_number,genome):
+def xfoil_calculate_profile(generation,profile_number, genome, ambient_data):
     
     profile_root = 'profiles\gen' + str(generation) + '\profile' + str(profile_number) + '.txt'
     profile_name = 'gen' + str(generation) + 'prof' + str(profile_number)
+    genome_root = 'genome\generation'+ str(generation) + '.txt'
+    aerodynamics = ambient.aero_conditions(ambient_data)
     
     
     commands = ['load',
             profile_root,
             'oper',
-            'mach 0.2',
-            're 3500',
+            'mach ' + str(aerodynamics[0]),
+            're ' + str(aerodynamics[1]),
             'visc',
             'pacc',
             "aerodata\data" + profile_name + '.txt',
@@ -86,9 +89,13 @@ def xfoil_calculate_profile(generation,profile_number,genome):
     for line in p.stdout.readlines():
         print(line.decode(), end='')
 
-def xfoil_calculate_population(generation, genome_matrix):
+def xfoil_calculate_population(generation, ambient_data):
+    
+    genome_root = 'genome\generation'+ str(generation) + '.txt'    
+    genome_matrix = np.loadtxt(genome_root, skiprows=1)    
     num_pop = genome_matrix.shape[0]
+    
     for profile_number in np.arange(1,num_pop+1,1):
-        xfoil_calculate_profile(generation, profile_number, genome_matrix[profile_number-1,:])
+        xfoil_calculate_profile(generation, profile_number, genome_matrix[profile_number-1,:], ambient_data)
 
 

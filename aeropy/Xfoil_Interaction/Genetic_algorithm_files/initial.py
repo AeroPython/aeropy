@@ -81,6 +81,24 @@ def start_pop(pop_num):
 #    
 #    genome[1,:] = genes
     
+    profile_number = genome.shape[0]    
+    genome_root = 'genome\generation0.txt'
+    title = 'generation 0 genome'
+    
+    try:
+        os.remove(genome_root)
+    except :
+        pass
+    archivo = open(genome_root, mode = 'x')
+    archivo.write(title + '\n')
+    
+    for profile in np.arange(0, profile_number, 1):
+        line = ''
+        for gen in np.arange(0, 16,1):
+            line = line + str(genome[profile, gen]) +'    '
+        line = line + '\n'
+        archivo.write(line)
+    
     return genome
 
 

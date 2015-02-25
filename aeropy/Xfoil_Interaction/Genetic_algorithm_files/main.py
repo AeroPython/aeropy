@@ -25,21 +25,28 @@ import genetics as genetics
 
 if not os.path.exists('aerodata'):
         os.makedirs('aerodata')
+        
+if not os.path.exists('genome'):
+        os.makedirs('genome')
 
 generation = 0
 starting_profiles = 30
 total_generations = 10
-num_parent = 4
+num_parent = 3
+ambient_data = ('Earth', 0.3, 11, 'mach', 0.5)
 
 genome = initial.start_pop(starting_profiles)
 
-interfaz.xfoil_calculate_population(generation,genome)
+interfaz.xfoil_calculate_population(generation, ambient_data)
+
+
+#arange antes en 0
 
 for generation in np.arange(0,total_generations,1):
     
-    genome = genetics.genetic_step(genome,generation,num_parent)
+    genome = genetics.genetic_step(generation,num_parent)
     
-    interfaz.xfoil_calculate_population(generation + 1,genome)
+    interfaz.xfoil_calculate_population(generation + 1, ambient_data)
     
     
     

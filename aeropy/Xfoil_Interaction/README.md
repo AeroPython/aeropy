@@ -11,6 +11,8 @@ Includes:
 
 -Interactive Ipython notebook showing how the genome-to-profile decodification works (in progress). 
 
+-Ipython notebook that can easily be used to save drawings of the airfoils generate. (Must be placed with the .py genetic algorithm files)
+
 Genetic algorithm modules:
 
 -interfaz
@@ -33,9 +35,11 @@ Genetic algorithm modules:
 
 -selection
 
-All 10 files must be in the same folder as xfoil.exe. 
+-ambient
 
-Execute the main.py file in order to start the algorithm.
+All 11 files must be in the same folder as xfoil.exe. 
+
+Execute the main.py file in order to start the algorithm. The main control paraparameters are defined here, and secondary parameters will be automatically calculated. 
 
 It will randomly generate 30 profiles and test if they are viable, those wich aren't will be regenerated until they are.
 

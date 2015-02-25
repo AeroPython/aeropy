@@ -69,5 +69,5 @@ def score(generation, num_pop):
     pop_results = pop_analice (generation, num_pop)
     cl_score = adimension(pop_results[:,0])
     efic_score = adimension(pop_results[:,1])
-    total_score = 0.6 * cl_score + 0.4 * efic_score
+    total_score = 0.3 * cl_score + 0.7 * efic_score
     return total_score
