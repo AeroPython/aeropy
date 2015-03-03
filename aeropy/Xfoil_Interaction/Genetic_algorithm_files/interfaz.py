@@ -21,18 +21,19 @@ At last, it sends back to the main program the results obtained.
 
 
 import subprocess
-import sys
 import os
 import transcript as trans
 import numpy as np
 import ambient as ambient
 
 
-def xfoil_calculate_profile(generation,profile_number, genome, ambient_data):
+def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aero_domain):
+    
+    '''Starts Xfoil and analyzes the given airfoil. Saves the results.
+    '''
     
     profile_root = 'profiles\gen' + str(generation) + '\profile' + str(profile_number) + '.txt'
     profile_name = 'gen' + str(generation) + 'prof' + str(profile_number)
-    genome_root = 'genome\generation'+ str(generation) + '.txt'
     aerodynamics = ambient.aero_conditions(ambient_data)
     
     
@@ -46,9 +47,9 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data):
             "aerodata\data" + profile_name + '.txt',
             '',
             'aseq',
-            '0',
-            '20',
-            '1',
+            str(aero_domain[0]),
+            str(aero_domain[1]),
+            str(aero_domain[2]),
             '',
             'quit']
 
@@ -89,13 +90,17 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data):
     for line in p.stdout.readlines():
         print(line.decode(), end='')
 
-def xfoil_calculate_population(generation, ambient_data):
+def xfoil_calculate_population(generation, ambient_data, aero_domain):
+    '''Given a generation number and ambiental conditions, reads the file
+    which contains the genome information of the generation, and uses xfoil to
+    analyze each airfoil.
+    '''
     
     genome_root = 'genome\generation'+ str(generation) + '.txt'    
     genome_matrix = np.loadtxt(genome_root, skiprows=1)    
     num_pop = genome_matrix.shape[0]
     
     for profile_number in np.arange(1,num_pop+1,1):
-        xfoil_calculate_profile(generation, profile_number, genome_matrix[profile_number-1,:], ambient_data)
+        xfoil_calculate_profile(generation, profile_number, genome_matrix[profile_number-1,:], ambient_data, aero_domain)
 
 

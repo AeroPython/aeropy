@@ -15,8 +15,7 @@ genetic optimization of the profile.
 
 
 
-import subprocess
-import sys
+
 import os
 import interfaz as interfaz
 import numpy as np
@@ -29,24 +28,57 @@ if not os.path.exists('aerodata'):
 if not os.path.exists('genome'):
         os.makedirs('genome')
 
+
+####---------Primary Variables-----
+
+
 generation = 0
-starting_profiles = 30
-total_generations = 10
-num_parent = 3
-ambient_data = ('Earth', 0.3, 11, 'mach', 0.5)
+airfoils_per_generation = 30
+total_generations = 15
+num_parent = 4
+ambient_data = ('Earth', 0.1, 3, 'mach', 0.1)
 
-genome = initial.start_pop(starting_profiles)
+# We give the algorithm the conditions at wich we want to optimize our airofil
+# through the "ambient data" tuple. The first position is for the planet,
+# only 'Mars' and 'Earth are available at the moment.
+# The second position is for the lenght of the airfoil, in metres.
+# The third is for the flying height, in kilometers, above sea level 
+# on Earth and avobe the zero reference in Mars. 
+# The fourth especifies the type of speed we are introducing, and can
+# have the values 'speed' or 'mach'.
+# The last one is for the value of the parameter selected in the previous one.
 
-interfaz.xfoil_calculate_population(generation, ambient_data)
+
+####--------Secondary Variables------
+#-- Analysis domain
+start_alpha_angle = 0
+finish_alpha_angle = 20
+alpha_angle_step = 1
+
+aero_domain = (start_alpha_angle, finish_alpha_angle, alpha_angle_step)
+#-- Optimization objectives
+
+lift_coefficient_weight = 0.3
+efficiency_weight = 0.7
+
+weighting_parameters = (lift_coefficient_weight, efficiency_weight)
+
+####--- Starting the population, analysis of the starting population
 
 
-#arange antes en 0
+genome = initial.start_pop(airfoils_per_generation)
+
+interfaz.xfoil_calculate_population(generation, ambient_data, aero_domain)
+
+
+##--- Genetic Algorithm
+
 
 for generation in np.arange(0,total_generations,1):
     
-    genome = genetics.genetic_step(generation,num_parent)
+    genome = genetics.genetic_step(generation,num_parent, weighting_parameters)
     
-    interfaz.xfoil_calculate_population(generation + 1, ambient_data)
+    interfaz.xfoil_calculate_population(generation + 1, ambient_data, aero_domain)
     
     
     

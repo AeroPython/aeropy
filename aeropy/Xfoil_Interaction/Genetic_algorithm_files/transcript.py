@@ -8,8 +8,8 @@ This is the python script that contains those functions that are necesary
 in order to get a xfoil-compatible description of a profile from the 
 genetic information provided by the interface script.
 
-When this spript is run independly, will return an draw of a profile
-calculated from an example genome.
+When this spript is run independly, and the final lines ar de-commented,
+ will return an draw of a profile calculated from an example genome.
 
 When used inside the algorithm, the interface will import these functions
 and call the "decode_genome" function with an array of genes. The function shall
@@ -41,7 +41,7 @@ def bernstein(u):
     return b
 
                  
-def punto_pendiente(a,dist,ang):
+def point_slope(a,dist,ang):
     '''Given a point "a", calculates the coordinates of another one
     placed at a distance "dist" in the direction"ang" (in radians).
     '''
@@ -49,41 +49,41 @@ def punto_pendiente(a,dist,ang):
     return punto
 
 
-def generador_puntos(genes):
+def point_generator(genes):
     '''This function is the first step decoding the profile genome:
     it generates the 13x2 coordinates of the points used in the 4
     bezier curves that describe the profile.
     '''
-    puntos = np.zeros([13,2])
-    puntos[0,:] = [1,0]
-    puntos[1,:] = punto_pendiente([1,0],genes[1],genes[0])
-    puntos[2,:] = punto_pendiente([genes[2],genes[3]],genes[5],genes[4])
-    puntos[3,:] = [genes[2],genes[3]]
-    puntos[4,:] = punto_pendiente([genes[2],genes[3]],genes[6],genes[4]+np.pi)
-    puntos[5,:] = [0, genes[7]]
-    puntos[6,:] = [0,0]
-    puntos[7,:] = [0, -genes[8]]
-    puntos[8,:] = punto_pendiente([genes[9],genes[10]], genes[12], genes[11]+np.pi)
-    puntos[9,:] = [genes[9],genes[10]]
-    puntos[10,:] = punto_pendiente([genes[9],genes[10]], genes[13], genes[11])
-    puntos[11,:] = punto_pendiente([1,0], genes[15], genes[14])
-    puntos[12,:] = [1,0]
-    return puntos
+    points = np.zeros([13,2])
+    points[0,:] = [1,0]
+    points[1,:] = point_slope([1,0],genes[1],genes[0])
+    points[2,:] = point_slope([genes[2],genes[3]],genes[5],genes[4])
+    points[3,:] = [genes[2],genes[3]]
+    points[4,:] = point_slope([genes[2],genes[3]],genes[6],genes[4]+np.pi)
+    points[5,:] = [0, genes[7]]
+    points[6,:] = [0,0]
+    points[7,:] = [0, -genes[8]]
+    points[8,:] = point_slope([genes[9],genes[10]], genes[12], genes[11]+np.pi)
+    points[9,:] = [genes[9],genes[10]]
+    points[10,:] = point_slope([genes[9],genes[10]], genes[13], genes[11])
+    points[11,:] = point_slope([1,0], genes[15], genes[14])
+    points[12,:] = [1,0]
+    return points
 
-def bezier(num, puntos_control):
+def bezier(num, control_points):
     '''This function calculates a Bezier curve using as control 
     points those given in the imput, with a resolution of "num" points.
     '''
    
-    parametro_u = np.linspace(0,1,num)
+    parameter_u = np.linspace(0,1,num)
     curva = np.zeros([num,2])
 
-    for contador in np.arange(num):
-        _ = bernstein(parametro_u[contador])*puntos_control
-        curva[contador,] = sum (_)
+    for counter in np.arange(num):
+        _ = bernstein(parameter_u[counter])*control_points
+        curva[counter,] = sum (_)
     return curva
 
-def profile(num, puntos_control):
+def profile(num, control_points):
     
     '''This is the second stage of the decoding process.
     This will return a line made of 4 bezier curves whose control points
@@ -93,18 +93,19 @@ def profile(num, puntos_control):
     
     perfil = np.zeros([(4*num), 2])
 
-    perfil[0:num,:] = bezier(num,puntos_control[0:4,:])
-    perfil[num:2*num,:] = bezier(num,puntos_control[3:7,:])
-    perfil[2*num:3*num,:] = bezier(num,puntos_control[6:10,:])
-    perfil[3*num:4*num,:] = bezier(num,puntos_control[9:13,:])
+    perfil[0:num,:] = bezier(num,control_points[0:4,:])
+    perfil[num:2*num,:] = bezier(num,control_points[3:7,:])
+    perfil[2*num:3*num,:] = bezier(num,control_points[6:10,:])
+    perfil[3*num:4*num,:] = bezier(num,control_points[9:13,:])
     
     return perfil
 def decode_genome(genome):
-    '''
+    '''Calculates the x and y coordinates of 100 points describing
+    an airfoil from the given genome
     '''
     num = 25
     epsilon = 0.001
-    profile_points = profile(num, generador_puntos(genome))
+    profile_points = profile(num, point_generator(genome))
     
     profile_points[0, 1] = epsilon 
     profile_points[4*num-1,1] = -epsilon
@@ -112,8 +113,10 @@ def decode_genome(genome):
 
 '''
 The following code contains an example and will be used with test purposes only,
-when this script is run whole and won't be used in the standard function of the 
+when this script is run alone, and won't be used in the standard function of the 
 genetic algorithm.
+
+De-Comment the lines in order to use them.
 '''
 #
 #import matplotlib.pyplot as plt

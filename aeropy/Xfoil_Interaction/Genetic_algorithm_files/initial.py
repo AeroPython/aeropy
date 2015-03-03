@@ -7,28 +7,24 @@ Created on Fri Feb 20 20:57:16 2015
 This is a submodule for the genetic algorithm that is explained in
 https://docs.google.com/presentation/d/1_78ilFL-nbuN5KB5FmNeo-EIZly1PjqxqIB-ant-GfM/edit?usp=sharing
 
-This script requires from the main program a serie of  profile genomes.
-The number of profiles is "num_pop"
-This subprogram, first, uses the script "transcript.py" in order to translate
-the genomes into a series of points that Xfoil can understand.
-
-Then, sends them to Xfoil, and ask it to analize them.
-
-At last, it sends back to the main program the results obtained. 
+This script creates the initial population for the genetic algorithm.
+It does so by adding a random deviation to a default profile genome.
 
 '''
 
 
 
-import subprocess
-import sys
+
 import os
-import interfaz as interfaz
 import numpy as np
 import testing as test
 
 
 def start_pop(pop_num):
+    '''Creates a randomly generated population of the size (pop_num)
+    '''
+    
+    genome = np.zeros([pop_num,16])    
     
     genes = np.array([150*np.pi/180, #ang s1
                   0.2,           #dist s1
@@ -47,9 +43,8 @@ def start_pop(pop_num):
                   190*np.pi/180, #ang s2
                   0.2])          #dist s2
 
-#    generation = 0
-#profile_number = 1
-    genome = np.zeros([pop_num,16])
+
+    
     
     gen_deviation = np.array([10*np.pi/180, #ang s1
                   0.15,           #dist s1
@@ -72,14 +67,14 @@ def start_pop(pop_num):
     for profile in np.arange(0, pop_num, 1):
         deviation = 0.7 * np.random.randn(16) * gen_deviation
         genome[profile,:] = genes + deviation
-        while not(test.test_perfil(genome[profile,:])):
+        while not(test.airfoil_test(genome[profile,:])):
+            
+            # Here we check tat our airfoil actually makes sense
+        
             deviation = 0.7 * np.random.randn(16) * gen_deviation
             genome[profile,:] = genes + deviation
         
-#        for gen in np.arange(0,16,1):
-#            genome[profile, gen] = genome[profile, gen] * (1 + 0.1 * np.random.randn())
-#    
-#    genome[1,:] = genes
+
     
     profile_number = genome.shape[0]    
     genome_root = 'genome\generation0.txt'
@@ -102,4 +97,3 @@ def start_pop(pop_num):
     return genome
 
 
-#interfaz.xfoil_calculate_population(generation,genome)

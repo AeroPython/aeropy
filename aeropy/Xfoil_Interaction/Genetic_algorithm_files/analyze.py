@@ -7,33 +7,25 @@ Created on Fri Feb 20 20:57:16 2015
 This is a submodule for the genetic algorithm that is explained in
 https://docs.google.com/presentation/d/1_78ilFL-nbuN5KB5FmNeo-EIZly1PjqxqIB-ant-GfM/edit?usp=sharing
 
-This script is the main program. It will call the different submodules
-and manage the data transfer between them in order to achieve the
-genetic optimization of the profile.
+This script is the analysis subprogram. Its objective is to assign a score to
+every airfoil by reading the aerodynamic characteristics that XFoil
+has calculated.
 
 '''
 
 
 
-import subprocess
-import sys
-import os
-import interfaz as interfaz
+
 import numpy as np
-import initial as initial
 
 
 
-#generation = 0
-#starting_profiles = 20
-#
-#genome = initial.start_pop(starting_profiles)
-#
-#interfaz.xfoil_calculate_population(generation,genome)
-#
-#num_pop = genome_matrix.shape[0]
 
 def pop_analice (generation, num_pop):
+    '''For a given generation and number of airfoils, returns an array which
+    contains the maximun Lift Coefficient and Maximum Aerodinamic Efficiency
+    for every airfoil.
+    '''
     pop_results = np.zeros([num_pop,2])
     for profile_number in np.arange(1,num_pop+1,1):
        pop_results[profile_number - 1, :] = profile_analice (generation, profile_number)
@@ -41,7 +33,12 @@ def pop_analice (generation, num_pop):
     return pop_results
     
     
-def profile_analice (generation, profile_number):    
+def profile_analice (generation, profile_number):
+    '''For a given generation and profile, searches for the results of the
+    aerodynamic analysis made in Xfoil. Then, searches for the maximum
+    values of the Lift Coefficient and Aerodynamic Efficiency and returns them
+    as an 1x2 array.
+    '''    
     profile_name = 'gen' + str(generation) + 'prof' + str(profile_number)
     data_root = "aerodata\data" + profile_name + '.txt'
     datos = np.loadtxt(data_root, skiprows=12, usecols=[1,2])
@@ -60,14 +57,18 @@ def profile_analice (generation, profile_number):
     return np.array([clmax , maxefic])
     
 def adimension(array):
+    '''Adimensionalyzes an array with its maximun value
+    '''
     max_value = max(array)
     adim = array / max_value
     return adim
     
-def score(generation, num_pop):
-    
+def score(generation, num_pop, weights):
+    '''For a given generation, number of airfoils and weight parameters, returns
+    an array of the scores of all airfoils.
+    '''
     pop_results = pop_analice (generation, num_pop)
     cl_score = adimension(pop_results[:,0])
     efic_score = adimension(pop_results[:,1])
-    total_score = 0.3 * cl_score + 0.7 * efic_score
+    total_score = weights[0] * cl_score + weights[1] * efic_score
     return total_score

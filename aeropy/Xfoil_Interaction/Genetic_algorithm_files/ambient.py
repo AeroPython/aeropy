@@ -7,31 +7,37 @@ Created on Fri Feb 20 20:57:16 2015
 This is a submodule for the genetic algorithm that is explained in
 https://docs.google.com/presentation/d/1_78ilFL-nbuN5KB5FmNeo-EIZly1PjqxqIB-ant-GfM/edit?usp=sharing
 
-This script is the main program. It will call the different submodules
-and manage the data transfer between them in order to achieve the
-genetic optimization of the profile.
+This script is the ambient subprogram. Its objective is to calculate the 
+Mach and Reynolds numbers that XFoil uses to calculate the 
+aerodynamics of airfoils.
 
+
+This subprogram consist mainly in  models for the International Standard Atmosphere
+and an equivalent atmosphere model for Mars.
 '''
-
-
-
 
 import numpy as np
 
 
 
-
-
-def ventana (x, inicio=0, fin=1, f=1.):
-    _1 = (np.sign(x-inicio))
-    _2 = (np.sign(-x+fin))
+def window (x, start=0, end=1, f=1.):
+    '''Returns a function f between 'start' and 'endn'.
+    Returns 0 outside this interval'''
+    _1 = (np.sign(x-start))
+    _2 = (np.sign(-x+end))
     return 0.25 * (_1+1) * (_2+1) * f
     
-def etc (x, inicio=0, f=1.):
-    _1 = (np.sign(x-inicio))
+def etc (x, start=0, f=1.):
+    '''Returns 0 until 'start', returns 'f' after.
+    '''
+    _1 = (np.sign(x-start))
     return 0.5 * (_1+1) * f
 
 def earth_conditions():
+    
+    '''Returns an array of atmospheric and physical data from which the complete
+    model of the atmosphere can be built.
+    '''
     heights = np.array([-1.000,
                         11.019,
                         20.063,
@@ -43,7 +49,7 @@ def earth_conditions():
                         90.000])
   
 
-    # an es el gradiente válido entre H(n-1) y H(n)
+    
     temp_gradient = np.array([-6.49,
                                0,
                                0.99,
@@ -72,8 +78,8 @@ def earth_conditions():
     return conditions
     
     
-def temperatura(h, conditions, dT = 0):
-        '''Calcula la temperatura a una altura h en Km sobre el nivel del mar'''
+def temperature(h, conditions, dT = 0):
+        '''Calculates the value for temperature in Kelvin at a certain altitude'''
         grad = 0
         heights = conditions[0]
         gradient = conditions[1]
@@ -84,37 +90,35 @@ def temperatura(h, conditions, dT = 0):
         
         for layer in np.arange(0, atm_layer-1,1):
             increase = temp_points[layer] + gradient[layer] * (h - heights[layer])
-            grad = grad + ventana(h, heights[layer],heights[layer+1], increase)
+            grad = grad + window(h, heights[layer],heights[layer+1], increase)
         grad = grad + etc(h, heights[atm_layer-1],temp_points[atm_layer-1] + gradient[atm_layer-1]*(h - heights[atm_layer-1]))
         return grad + dT
      
         
-def segmento_presion_1(z, pi, z0, dT, conditions):
-        '''calcula la presión en un segmento de atmósfera de temperatura constante'''
+def pressure_segment_1(z, pi, z0, dT, conditions):
+        '''Calculates pressure throught a constant temperature segment of the atmosphere'''
         g = conditions[3]
         R = conditions[4]
         radius = conditions[5]
         h  = (radius * z) /(radius + z)
         h0 = (radius * z0)/(radius + z0)
-        _ = 1000*(h-h0) * g / (R * temperatura(z, conditions, dT))
+        _ = 1000*(h-h0) * g / (R * temperature(z, conditions, dT))
         return pi * np.e ** -_
             
-def segmento_presion_2(z, pi, Ti, a, dT, conditions):
-        '''calcula la presión en un segmento de atmósfera con gradiente de temperatura "a" '''
+def pressure_segment_2(z, pi, Ti, a, dT, conditions):
+        '''Calculates pressure throught a variant temperature segment of the atmosphere '''
         g = conditions[3]
         R = conditions[4]
         _ = g / (a*R/1000)
-        return pi * (temperatura(z, conditions, dT)/(Ti + dT)) ** -_
+        return pi * (temperature(z, conditions, dT)/(Ti + dT)) ** -_
                 
-def presion (h, conditions,  dT = 0):
-        '''Calcula la presion en Pa a una altura h en m sobre el nivel del mar'''
+def pressure (h, conditions,  dT = 0):
+        '''Calculates the value for pressure in Pascal at a certain altitude'''
         
         heights = conditions[0]
         gradient = conditions[1]
         temp_points = conditions[2]
         atm_layer = gradient.shape[0]
-        #Primero, calculamos la presion de cada punto de cambio de capa para la condición de dT pedida
-        #Suponemos que la presión es siempre constante a 101325 Pa a nivel del mar
         
         
         pressure_points = np.zeros([atm_layer])
@@ -122,12 +126,12 @@ def presion (h, conditions,  dT = 0):
         
         for layer in np.arange(1, atm_layer, 1):
             if (abs(gradient[layer-1]) < 1e-8):
-                pressure_points[layer] = segmento_presion_1(heights[layer],
+                pressure_points[layer] = pressure_segment_1(heights[layer],
                                                             pressure_points[layer - 1],
                                                             heights[layer - 1],
                                                             dT, conditions)
             else:
-                pressure_points[layer] = segmento_presion_2(heights[layer],
+                pressure_points[layer] = pressure_segment_2(heights[layer],
                                                             pressure_points[layer - 1],
                                                             temp_points[layer - 1],
                                                             gradient[layer-1],
@@ -139,24 +143,24 @@ def presion (h, conditions,  dT = 0):
         grad = 0
         for layer in np.arange(1, atm_layer, 1):
             if (abs(gradient[layer-1]) < 1e-8):
-                funcion = segmento_presion_1(h,
+                funcion = pressure_segment_1(h,
                                              pressure_points[layer - 1],
                                              heights[layer - 1],
                                              dT, conditions)
             else:
-                funcion = segmento_presion_2(h,
+                funcion = pressure_segment_2(h,
                                              pressure_points[layer - 1],
                                              temp_points[layer - 1],
                                              gradient[layer-1],
                                              dT, conditions)
-            grad = grad + ventana(h, heights[layer-1], heights[layer], funcion)
+            grad = grad + window(h, heights[layer-1], heights[layer], funcion)
         if (abs(gradient[layer-1])< 10e-8):
-            funcion = segmento_presion_1(h,
+            funcion = pressure_segment_1(h,
                                          pressure_points[layer - 1],
                                          heights[layer - 1],
                                          dT, conditions)
         else:
-            funcion = segmento_presion_2(h,
+            funcion = pressure_segment_2(h,
                                          pressure_points[layer - 1],
                                          temp_points[layer - 1],
                                          gradient[layer-1],
@@ -166,13 +170,16 @@ def presion (h, conditions,  dT = 0):
         return grad
     
 
-def densidad(h, conditions, dT = 0):
-        '''Calcula la densidad a una altura h en m sobre el nivel del mar'''
+def density(h, conditions, dT = 0):
+        '''Calculates the value for density in Kg/m3 at a certain altitude'''
         R = conditions[4]
-        return presion(h, conditions, dT)/(R * temperatura(h, conditions, dT))
+        return pressure(h, conditions, dT)/(R * temperature(h, conditions, dT))
         
         
 def mars_conditions():
+    '''Returns an array of atmospheric and physical data from which the complete
+    model of the atmosphere can be built.
+    '''
     heights = np.array([-8.3,
                          8.85,
                          30]) 
@@ -200,7 +207,10 @@ def mars_conditions():
     
 
 
-def viscosidad(temp, planet):
+def viscosity(temp, planet):
+    '''Calculates the value for viscosity in microPascal*second
+    for a certain temperature'''
+    
     if (planet == 'Earth'):
         c = 120
         lamb = 1.512041288
@@ -213,16 +223,20 @@ def viscosidad(temp, planet):
     
     
 def Reynolds(dens, longitud, vel, visc):
+    '''Calculates the Reynolds number'''
     re = 1000000 * dens * longitud * vel / visc
     return re
 
             
 def aero_conditions(ambient_data):
+    '''Given a certain conditions, return the value of the Mach and Reynolds
+    numbers, in that order.
+    '''
     (planet, chord, height, speed_type, speed) = ambient_data
     planet_dic = {'Mars':mars_conditions(), 'Earth':earth_conditions()}
        
     
-    sound = (1.4 *presion(height, planet_dic[planet]) / densidad(height,planet_dic[planet]))**0.5
+    sound = (1.4 *pressure(height, planet_dic[planet]) / density(height,planet_dic[planet]))**0.5
     
     if (speed_type == 'mach'):
         mach = speed
@@ -234,14 +248,9 @@ def aero_conditions(ambient_data):
         print('error in the data, invalid speed parameter')
         
     
-    
-    re = Reynolds(densidad(height, planet_dic[planet]), chord, vel, viscosidad(temperatura(height, planet_dic[planet]), planet))
+    visc = viscosity(temperature(height, planet_dic[planet]), planet)
+    re = Reynolds(density(height, planet_dic[planet]), chord, vel, visc)
     
   
     
     return [mach, re]
-#
-#ambient_data = ('Earth', 03.0003, 11, 'speed', 30.1) 
-#
-#result = aero_conditions(('Earth', 0.03, 11, 'mach', 0.1))       
-#print(result)      
