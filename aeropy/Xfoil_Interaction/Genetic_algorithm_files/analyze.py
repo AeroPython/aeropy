@@ -17,6 +17,7 @@ has calculated.
 
 
 import numpy as np
+import os
 
 
 
@@ -39,8 +40,8 @@ def profile_analice (generation, profile_number):
     values of the Lift Coefficient and Aerodynamic Efficiency and returns them
     as an 1x2 array.
     '''    
-    profile_name = 'gen' + str(generation) + 'prof' + str(profile_number)
-    data_root = "aerodata\data" + profile_name + '.txt'
+    profile_name = 'datagen' + str(generation) + 'prof' + str(profile_number)+ '.txt'
+    data_root = os.path.join("aerodata", profile_name)
     datos = np.loadtxt(data_root, skiprows=12, usecols=[1,2])
     
     read_dim = np.array(datos.shape)

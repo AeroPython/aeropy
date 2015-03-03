@@ -32,8 +32,11 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
     '''Starts Xfoil and analyzes the given airfoil. Saves the results.
     '''
     
-    profile_root = 'profiles\gen' + str(generation) + '\profile' + str(profile_number) + '.txt'
     profile_name = 'gen' + str(generation) + 'prof' + str(profile_number)
+    geo_file_name = 'profile' + str(profile_number) + '.txt'
+    profile_root = os.path.join('profiles','gen' + str(generation) , geo_file_name )
+    data_root = os.path.join("aerodata","data" + profile_name + '.txt')    
+    
     aerodynamics = ambient.aero_conditions(ambient_data)
     
     
@@ -44,7 +47,7 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
             're ' + str(aerodynamics[1]),
             'visc',
             'pacc',
-            "aerodata\data" + profile_name + '.txt',
+            data_root,
             '',
             'aseq',
             str(aero_domain[0]),
@@ -56,14 +59,13 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
 
     perfil = trans.decode_genome(genome)
     
-    if not os.path.exists('profiles\gen' + str(generation)):
-        os.makedirs('profiles\gen' + str(generation))
+
     try:
         os.remove(profile_root)
     except :
         pass
     try:
-        os.remove("aerodata\data" + profile_name + '.txt')
+        os.remove(data_root)
     except :
         pass
     
@@ -78,7 +80,7 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
         archivo.write(texto)
     archivo.close()
 
-    p = subprocess.Popen(["xfoil.exe",],
+    p = subprocess.Popen(["xfoil",],
                      stdin=subprocess.PIPE,
                      stdout=subprocess.PIPE)
 
@@ -96,7 +98,7 @@ def xfoil_calculate_population(generation, ambient_data, aero_domain):
     analyze each airfoil.
     '''
     
-    genome_root = 'genome\generation'+ str(generation) + '.txt'    
+    genome_root = os.path.join('genome','generation'+ str(generation) + '.txt')    
     genome_matrix = np.loadtxt(genome_root, skiprows=1)    
     num_pop = genome_matrix.shape[0]
     

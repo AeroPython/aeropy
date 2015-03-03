@@ -25,11 +25,11 @@ import mutation as mutation
 
 
 
-
 def genetic_step(generation,num_parent, weights):
     '''Returns the genome of the (n+1)generation
     '''
-    genome_parent_root = 'genome\generation'+ str(generation) + '.txt'    
+    file_parent_name = 'generation'+ str(generation) + '.txt'
+    genome_parent_root = os.path.join('genome', file_parent_name)    
     genome = np.loadtxt(genome_parent_root, skiprows=1)
     num_pop = genome.shape[0]
     
@@ -38,8 +38,9 @@ def genetic_step(generation,num_parent, weights):
     children = cross.cross(parents, num_pop)
     children = mutation.mutation(children, generation, num_parent)
     
-    profile_number = children.shape[0]    
-    genome_root = 'genome\generation'+ str(generation + 1) + '.txt'
+    profile_number = children.shape[0] 
+    file_name = 'generation'+ str(generation + 1) + '.txt'
+    genome_root = os.path.join('genome', file_name)
     title = 'generation' + str(generation + 1) + 'genome'
     
     try:

@@ -77,7 +77,7 @@ def start_pop(pop_num):
 
     
     profile_number = genome.shape[0]    
-    genome_root = 'genome\generation0.txt'
+    genome_root = os.path.join('genome','generation0.txt')
     title = 'generation 0 genome'
     
     try:
