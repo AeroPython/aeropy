@@ -71,7 +71,7 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
    
     
     archivo = open(profile_root, mode = 'x')
-    archivo.write(profile_name + '\n\n\n')
+    archivo.write(profile_name + '\n')
 
 
     for i in np.arange(0,100,1):
