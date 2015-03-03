@@ -68,8 +68,7 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
         os.remove(data_root)
     except :
         pass
-    
-    
+   
     
     archivo = open(profile_root, mode = 'x')
     archivo.write(profile_name + '\n\n\n')
@@ -101,6 +100,10 @@ def xfoil_calculate_population(generation, ambient_data, aero_domain):
     genome_root = os.path.join('genome','generation'+ str(generation) + '.txt')    
     genome_matrix = np.loadtxt(genome_root, skiprows=1)    
     num_pop = genome_matrix.shape[0]
+    
+    profile_folder = os.path.join('profiles', 'gen' + str(generation))
+    if not os.path.exists(profile_folder):
+        os.makedirs(profile_folder)
     
     for profile_number in np.arange(1,num_pop+1,1):
         xfoil_calculate_profile(generation, profile_number, genome_matrix[profile_number-1,:], ambient_data, aero_domain)
