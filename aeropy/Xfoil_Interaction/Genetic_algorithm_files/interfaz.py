@@ -86,7 +86,7 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
     for command in commands:
         p.stdin.write((command + '\n').encode())
      
-    p.stdin.write("\nquit\n".encode())
+
     p.stdin.close()
     for line in p.stdout.readlines():
         print(line.decode(), end='')
