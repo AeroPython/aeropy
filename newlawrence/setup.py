@@ -4,7 +4,7 @@ import os
 
 import numpy
 
-version = '1.5.0'
+version = '1.5.1'
 base_name = 'isa'
 include_path = \
     os.path.join(os.path.abspath(__file__)

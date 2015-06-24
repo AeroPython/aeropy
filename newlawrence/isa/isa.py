@@ -9,9 +9,9 @@ class ISA:
 
     def __init__(self, **kwargs):
 
-        self.__build(**kwargs)
+        self.set(**kwargs)
 
-    def __build(self, **kwargs):
+    def set(self, **kwargs):
 
         ints = {'psize': 100}
         doubles = {'R': 287.05287,
@@ -48,10 +48,6 @@ class ISA:
     def params(self):
 
         return copy.deepcopy(self.__params)
-
-    def set(self, **kwargs):
-
-        self.__build(**kwargs)
 
     def atm(self, h):
 
