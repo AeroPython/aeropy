@@ -1,3 +1,14 @@
+· Changes to version 1.5.0:
+
+    - Complete rewrite of Python wrapper.
+    - Parameter customization for non-standard atmostpheres.
+
+. Changes to version 1.4.1:
+
+    - Speed up. Smart-layer system implemented similar to Numpy's version.
+    - Parallel execution only for large arrays.
+    - Minor changes to Python wrapper.
+
 · Changes to version 1.4.0:
 
     - Added parallelization support through OpenMP.

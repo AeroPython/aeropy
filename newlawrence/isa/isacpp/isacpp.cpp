@@ -7,18 +7,67 @@
 using namespace std;
 using namespace custom_math;
 
-const double ISACpp::R = 287.05287;
-const double ISACpp::g = 9.80665;
-const double ISACpp::al[layers] = {-0.0065,  0.0000, 0.0010, 0.0028}; 
-const double ISACpp::hl[layers] = {    0., 11000., 20000., 32000.};
+// T_Layer class
+
+ISACpp::T_Layer::T_Layer() {}
+
+void ISACpp::T_Layer::set(double hs_, double a_, double Ts_) {
+
+    hs = hs_, a = a_;
+    Ts = Ts_;
+}
+
+double ISACpp::T_Layer::operator()(const double &h) const {
+
+    return Ts + a * (h - hs);
+}
+
+// p_Layer class
+
+ISACpp::p_Layer::p_Layer() {}
+
+void ISACpp::p_Layer::set(double R_, double g_, double hs_,
+                          double a_, double Ts_, double ps_) {
+
+    R = R_, g = g_;
+    hs = hs_, a = a_;
+    Ts = Ts_, ps = ps_;
+
+    if(d(a))
+        pl = &p_Layer::pl_noTgrad;
+    else
+        pl = &p_Layer::pl_Tgrad;
+}
+
+double ISACpp::p_Layer::operator()(const double &h) const {
+
+    return (this->*pl)(h);
+}
+
+double ISACpp::p_Layer::pl_noTgrad(const double &h) const {
+
+    return ps * exp(-g * (h - hs) / (R * Ts));
+}
+
+double ISACpp::p_Layer::pl_Tgrad(const double &h) const {
+
+    return ps * pow((1. + a * (h - hs) / Ts), -g / (R * a));
+}
+
+// ISACpp class
 
 ISACpp::ISACpp(const ISACpp &original) {}    // No copy constructor allowed
 
-int ISACpp::select(double h) const {
+double ISACpp::rhol(const double &T, const double &p) const {
 
-    int i;
+    return p / (R * T);
+}
 
-    for(int j = 0; j < layers - 1; j++) {
+int ISACpp::select(const double &h) const {
+
+    int i = 1;
+
+    for(int j = 0; j < layers; j++) {
         i = (j + 1) *
             static_cast<int>(u(h - hl[j]) - u(h - hl[j + 1]));
         if(i > 0)
@@ -30,72 +79,56 @@ int ISACpp::select(double h) const {
     return i - 1;
 }
 
-ISACpp::ISACpp(double delta_T) : dT(delta_T) {
+ISACpp::ISACpp(double R_, double g_, double *hl_, int n_hl,
+               double *al_, int n_al, double T0_, double p0_,
+               int psize) :
+               R(R_), g(g_), hl(hl_), al(al_),
+               T0(T0_), p0(p0_), parallel_size(psize) {
 
-    // Temperatures in the points of layer change
-    Tl[0] = 288.15 + dT;
-    for(int i = 1; i < layers; i++)
-        Tl[i] = Ts(hl[i], hl[i - 1], al[i - 1], Tl[i - 1]);
+    // Set the number of layers
+    layers = n_al;
 
-    // Pressures and densities in the points of layer change
-    pl[0] = 101325;
-    rhol[0] = pl[0] / (R * Tl[0]);
+    //Allocate memory for functions
+    Tl = new T_Layer[layers];
+    pl = new p_Layer[layers];
+
+    // Temperature and pressure layers
+    Tl[0].set(0., al[0], T0);
+    pl[0].set(R, g, 0., al[0], T0, p0);
     for(int i = 1; i < layers; i++) {
-        pl[i] = ps(hl[i], hl[i - 1], al[i - 1], Tl[i - 1], pl[i - 1]);
-        rhol[i] = pl[i] / (R * Tl[i]);
+        Tl[i].set(hl[i], al[i], Tl[i - 1](hl[i]));
+        pl[i].set(R, g, hl[i], al[i], Tl[i - 1](hl[i]), pl[i - 1](hl[i]));
     }
 }
 
-double ISACpp::Ts(double h, double h0, double a0, double T0) const {
+ISACpp::~ISACpp() {
 
-    return T0 + a0 * (h - h0);
-}
-
-
-double ISACpp::ps(double h, double h0, double a0, double T0,
-                  double p0) const {
-
-    double p;
-
-    if(d(a0))    // 1 if T grad is 0
-        p = p0 * exp(-g * (h - h0) / (R * T0));
-    else
-        p = p0 * pow((1. + a0 * (h - h0) / T0), -g / (R * a0));
-
-    return p;
-}
-
-double ISACpp::rhos(double h, double h0, double a0, double T0,
-                    double rho0) const {
-
-    double rho;
-
-    if(d(a0))    // 1 if T grad is 0
-        rho = rho0 * exp(-g * (h - h0) / (R * T0));
-    else
-        rho = rho0 * pow((1. + a0 * (h - h0) / T0), -1. - g / (R * a0));
-
-    return rho;
+    delete[] Tl;
+    delete[] pl;
 }
 
 int ISACpp::atm(double *h, int n_h, double *T, int n_T,
                 double *p, int n_p, double *rho, int n_rho) const {
 
+    int parallel = 0;
     int error = 0;    // Error flag
     int l;
 
     if((n_h != n_T) && (n_h != n_p) && (n_h != n_rho))
         return -1;    // Dimensions mismatch
 
-    #pragma omp parallel shared(T, p, rho, error) private(l)
+    if(n_h > parallel_size)
+		parallel = 1;    // Turn on parallelism for large loops
+
+    #pragma omp parallel shared(T, p, rho, error) private(l) if(parallel)
     {
         #pragma omp for schedule(static)
         for(int i = 0; i < n_h; i++)
-            if((h[i] >= 0.) && (h[i] <= hl[layers - 1])) {
+            if((h[i] >= 0.) && (h[i] <= hl[layers])) {
                 l = select(h[i]);
-                T[i] = Ts(h[i], hl[l], al[l], Tl[l]);
-                p[i] = ps(h[i], hl[l], al[l], Tl[l], pl[l]);
-                rho[i] = rhos(h[i], hl[l], al[l], Tl[l], rhol[l]);
+                T[i] = Tl[l](h[i]);
+                p[i] = pl[l](h[i]);
+                rho[i] = rhol(T[i], p[i]);
             }
             else {
                 T[i] = numeric_limits<double>::quiet_NaN();

@@ -4,7 +4,7 @@ import os
 
 import numpy
 
-version = '1.4.0'
+version = '1.5.0'
 base_name = 'isa'
 include_path = \
     os.path.join(os.path.abspath(__file__)
@@ -12,9 +12,11 @@ include_path = \
 
 copt = {'msvc': ['/openmp', '/Ox'],
         'mingw32': ['-fopenmp', '-O3'],
+        'mingw64': ['-fopenmp', '-O3'],
         'cygwin': ['-fopenmp', '-O3'],
         'unix': ['-fopenmp', '-O3']}
 lopt = {'mingw32': ['-lgomp'],
+        'mingw64': ['-lgomp'],
         'cygwin': ['-lgomp'],
         'unix': ['-lgomp']}
 

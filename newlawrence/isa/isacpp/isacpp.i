@@ -11,6 +11,8 @@
 import_array();
 %}
 
+%apply (double* IN_ARRAY1, int DIM1) {(double *hl_, int n_hl)};
+%apply (double* IN_ARRAY1, int DIM1) {(double *al_, int n_al)};
 %apply (double* IN_ARRAY1, int DIM1) {(double *h, int n_h)};
 %apply (double* INPLACE_ARRAY1, int DIM1) {(double *T, int n_T)};
 %apply (double* INPLACE_ARRAY1, int DIM1) {(double *p, int n_p)};
