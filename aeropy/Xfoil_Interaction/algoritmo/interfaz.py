@@ -22,9 +22,9 @@ At last, it sends back to the main program the results obtained.
 
 import subprocess
 import os
-import transcript as trans
+import algoritmo.transcript as trans
 import numpy as np
-import ambient as ambient
+import algoritmo.ambient as ambient
 
 
 def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aero_domain):

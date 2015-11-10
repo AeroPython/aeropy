@@ -19,8 +19,8 @@ genetic optimization of the profile.
 import os
 import interfaz as interfaz
 import numpy as np
-import initial as initial
-import genetics as genetics
+import algoritmo.initial as initial
+import algoritmo.genetics as genetics
 import IPython.nbformat.current as nbf
 
 

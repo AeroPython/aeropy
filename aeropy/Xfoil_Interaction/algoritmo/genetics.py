@@ -18,10 +18,10 @@ This script is the Genetic Step Subprograme. After the XFoil analysis of the
 
 import os
 import numpy as np
-import analyze as analyze
-import selection as selection
-import cross as cross
-import mutation as mutation
+import algoritmo.analyze as analyze
+import algoritmo.selection as selection
+import algoritmo.cross as cross
+import algoritmo.mutation as mutation
 
 
 

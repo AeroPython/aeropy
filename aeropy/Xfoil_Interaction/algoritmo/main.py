@@ -17,11 +17,11 @@ genetic optimization of the profile.
 
 
 import os
-import interfaz as interfaz
+import algoritmo.interfaz as interfaz
 import numpy as np
-import initial as initial
-import genetics as genetics
-import ender as ender
+import algoritmo.initial as initial
+import algoritmo.genetics as genetics
+import algoritmo.ender as ender
 
 #First, the main function is defined. This allows us to call it from a future
 #different starting file (like a PyQT graphic interface).
@@ -40,6 +40,8 @@ def main_program(all_parameters):
 #    num_winners = all_parameters[3]
     weighting_parameters = all_parameters[4]
 #    end_options = all_parameters[5]
+    ambient_data = all_parameters[6]
+    aero_domain = all_parameters[7]
 
     
 ###--- Creating work directories
@@ -96,18 +98,18 @@ if __name__ == '__main__':
 ####---------Primary Variables-----
 
 
-    airfoils_per_generation = 3
-    total_generations = 3
-    num_parent = 1
+    airfoils_per_generation = 6
+    total_generations = 6
+    num_parent = 2
 
 # We give the algorithm the conditions at wich we want to optimize our airofil
 # through the "ambient data" tuple. 
 
     planet = 'Mars' # For the moment we have 'Earth' and 'Mars'
-    chord_length = 0.2 # In metres
+    chord_length = 0.1 # In metres
     altitude = -7.5 # In Kilometres above sea level or reference altitude
     speed_parameter = 'speed' # 'speed' or 'mach'
-    speed_value = 30 # Value of the previous magnitude (speed - m/s)
+    speed_value = 18 # Value of the previous magnitude (speed - m/s)
     ambient_data = (planet, chord_length, altitude, speed_parameter, speed_value)
 
 
@@ -116,8 +118,8 @@ if __name__ == '__main__':
 #-- Analysis domain
 
     start_alpha_angle = 0
-    finish_alpha_angle = 15
-    alpha_angle_step = 1
+    finish_alpha_angle = 20
+    alpha_angle_step = 2
 
     aero_domain = (start_alpha_angle, finish_alpha_angle, alpha_angle_step)
     
@@ -141,13 +143,13 @@ if __name__ == '__main__':
 
     end_options = (draw_winners, draw_polars, draw_evolution, 
                compare_naca_standard, compare_naca_custom, 
-               create_report,
-               ambient_data, aero_domain)
+               create_report)
              
              
              
     all_parameters = (airfoils_per_generation, total_generations, num_parent,
-                      num_winners, weighting_parameters, end_options )   
+                      num_winners, weighting_parameters, end_options,
+                      ambient_data, aero_domain )   
 
 
     main_program(all_parameters)    

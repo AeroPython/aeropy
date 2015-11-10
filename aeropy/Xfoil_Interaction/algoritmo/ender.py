@@ -17,17 +17,17 @@ genetic optimization of the profile.
 
 
 import os
-import interfaz as interfaz
+import algoritmo.interfaz as interfaz
 import numpy as np
-import initial as initial
-import genetics as genetics
-import analyze as analyze
-import selection as selection
+import algoritmo.initial as initial
+import algoritmo.genetics as genetics
+import algoritmo.analyze as analyze
+import algoritmo.selection as selection
 import matplotlib.pyplot as plt
-import transcript as transcript
-import ambient as ambient
+import algoritmo.transcript as transcript
+import algoritmo.ambient as ambient
 import subprocess
-import ender_report
+#import algoritmo.ender_report
 
 
 def finish (all_parameters):
@@ -36,8 +36,9 @@ def finish (all_parameters):
     generation = all_parameters[1]
     num_winners = all_parameters[3]
     weights = all_parameters[4]
-    end_options = all_parameters[5]
-    
+    end_options = all_parameters[5]    
+    ambient_data = all_parameters[6]
+    aero_domain = all_parameters[7]
     
     must_draw_winners = end_options[0]
     must_draw_polars = end_options[1]
@@ -45,8 +46,6 @@ def finish (all_parameters):
     must_compare_naca_standard = end_options[3]
     must_compare_naca_custom = end_options[4]
     must_create_report = end_options[5]
-    ambient_data = end_options[6]
-    aero_domain = end_options[7]
     
     analyze_final(generation, num_winners, weights)
     
@@ -60,8 +59,8 @@ def finish (all_parameters):
         draw_aero_comparison(num_winners, compare)
     if (must_draw_evolution):
         draw_evolution(compare, aero_domain)
-    if (must_create_report):
-        ender_report.create_report(all_parameters)
+    #if (must_create_report):
+    #    ender_report.create_report(all_parameters)
 
 
 def analyze_final(generation, num_winners, weights):
@@ -183,6 +182,12 @@ def draw_winners(options):
         point_data = np.loadtxt(data_root, skiprows = 1)
         draw_figure(graph_name, graph_root, point_data)
         
+        graph_name = 'NACA 5603'
+        graph_root = os.path.join('results','graphics',graph_name + '.png')
+        data_root = os.path.join('profiles','winners',graph_name + '.txt')
+        point_data = np.loadtxt(data_root, skiprows = 1)
+        draw_figure(graph_name, graph_root, point_data)
+        
 
 def draw_figure(graph_name, graph_root, point_data):
     try:
@@ -225,9 +230,9 @@ def xfoil_calculate_profile(profile_name, profile_root,
             data_root,
             '',
             'aseq',
-            str(aero_domain[0]-1),
-            str(aero_domain[1]+5),
-            str(aero_domain[2]/2),
+            str(aero_domain[0]),
+            str(aero_domain[1]),
+            str(aero_domain[2]),
             '',
             'quit']
     if (profile_type == 'NACA'):
@@ -302,6 +307,18 @@ def final_xfoil(total_generations, ambient_data, aero_domain, compare):
         xfoil_calculate_profile(profile_name, profile_root,
                                 ambient_data, aero_domain,
                                 'NACA')
+                                
+        profile_name2 = 'NACA 5603'
+        profile_root2 = '5603'
+        
+        try:
+            os.remove(os.path.join('profiles','winners', profile_name2 + '.txt'))
+        except :
+            pass 
+        
+        xfoil_calculate_profile(profile_name2, profile_root2,
+                                ambient_data, aero_domain,
+                                'NACA')
 
 # Drawing polars
 
@@ -371,7 +388,7 @@ def draw_polar(data):
     
     
     
-        
+    plt.xlim(xmin=0)    
     plt.legend(loc = 4, fontsize =14)  
     plt.grid() 
     plt.minorticks_on()
@@ -394,6 +411,10 @@ def draw_aero_comparison(num_winners, compare):
         data.append([name, root])
     if compare :
         name = 'NACA 5615'
+        root = os.path.join('results','data', name + 'aerodata.txt')
+        data.append([name, root])
+        
+        name = 'NACA 5603'
         root = os.path.join('results','data', name + 'aerodata.txt')
         data.append([name, root])
         
@@ -483,6 +504,12 @@ def draw_evolution(options, aero_domain):
         naca_cl = max(naca_data[0:max_angle,0])
         naca_effic = max(naca_data[0:max_angle,0] / naca_data[0:max_angle,1])
         
+        naca_root2 = os.path.join('results','data','NACA 5603aerodata.txt')
+        naca_data2 = np.loadtxt(naca_root2, skiprows = 12, usecols=[1,2])
+        max_angle = 1 + 2 * round((aero_domain[1]-aero_domain[0])/aero_domain[2])
+        naca_cl2 = max(naca_data2[0:max_angle,0])
+        naca_effic2 = max(naca_data2[0:max_angle,0] / naca_data2[0:max_angle,1])
+        
     lift_name = 'lift history.txt'
     lift_root = os.path.join('results', 'data', lift_name )
     lift_data = np.loadtxt(lift_root, skiprows = 2)
@@ -512,6 +539,10 @@ def draw_evolution(options, aero_domain):
         label = 'NACA 5615' 
         value = naca_cl * np.ones_like(effic_data[:,0])
         plt.plot(lift_data[:,0], value, label = label)
+        
+        label = 'NACA 5603' 
+        value = naca_cl2 * np.ones_like(effic_data[:,0])
+        plt.plot(lift_data[:,0], value, label = label)
     
     
         
@@ -539,6 +570,10 @@ def draw_evolution(options, aero_domain):
         label = 'NACA 5615' 
         value = naca_effic * np.ones_like(effic_data[:,0])
         plt.plot(effic_data[:,0], value, label = label)
+        
+        label = 'NACA 5603' 
+        value = naca_effic2 * np.ones_like(effic_data[:,0])
+        plt.plot(effic_data[:,0], value, label = label)
     
     
         
@@ -549,3 +584,69 @@ def draw_evolution(options, aero_domain):
     plt.ylabel('Efficiency')
     plt.savefig(graph_root)
   
+
+
+
+
+
+
+if __name__ == '__main__':
+
+####---------Primary Variables-----
+
+
+    airfoils_per_generation = 30
+    total_generations = 30
+    num_parent = 4
+
+# We give the algorithm the conditions at wich we want to optimize our airofil
+# through the "ambient data" tuple. 
+
+    planet = 'Mars' # For the moment we have 'Earth' and 'Mars'
+    chord_length = 0.4 # In metres
+    altitude = -7.5 # In Kilometres above sea level or reference altitude
+    speed_parameter = 'speed' # 'speed' or 'mach'
+    speed_value = 28.284 # Value of the previous magnitude (speed - m/s)
+    ambient_data = (planet, chord_length, altitude, speed_parameter, speed_value)
+
+
+
+####--------Secondary Variables------
+#-- Analysis domain
+
+    start_alpha_angle = 0
+    finish_alpha_angle = 20
+    alpha_angle_step = 2
+
+    aero_domain = (start_alpha_angle, finish_alpha_angle, alpha_angle_step)
+    
+    
+#-- Optimization objectives
+
+    lift_coefficient_weight = 0.0
+    efficiency_weight = 1.0
+
+    weighting_parameters = (lift_coefficient_weight, efficiency_weight)
+
+#-- Final results options
+
+    num_winners = 3
+    vdraw_winners = True
+    vdraw_polars = True
+    vdraw_evolution = True
+    vcompare_naca_standard = True
+    vcompare_naca_custom = True #Work in progress
+    vcreate_report = True       #Work in progress
+
+    end_options = (vdraw_winners, vdraw_polars, vdraw_evolution, 
+               vcompare_naca_standard, vcompare_naca_custom, 
+               vcreate_report,
+               ambient_data, aero_domain)
+             
+             
+             
+    all_parameters = (airfoils_per_generation, total_generations, num_parent,
+                      num_winners, weighting_parameters, end_options )   
+
+
+    finish(all_parameters)    

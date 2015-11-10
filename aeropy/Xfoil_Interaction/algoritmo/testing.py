@@ -16,7 +16,7 @@ it runs 3 test in increasing level of complexity.
 
 
 
-import transcript as transcript
+import algoritmo.transcript as transcript
 import numpy as np
 from scipy import interpolate
 

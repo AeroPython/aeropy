@@ -22,7 +22,7 @@ of decreasing the quality obtained in a previous step.
 
 
 import numpy as np
-import testing as test
+import algoritmo.testing as test
 
 def mutation(children, generation, num_parent):
     '''Given a genome, mutates it in order to have a diverse population

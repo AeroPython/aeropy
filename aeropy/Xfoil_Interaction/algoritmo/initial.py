@@ -17,7 +17,7 @@ It does so by adding a random deviation to a default profile genome.
 
 import os
 import numpy as np
-import testing as test
+import algoritmo.testing as test
 
 
 def start_pop(pop_num):
