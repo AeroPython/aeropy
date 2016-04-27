@@ -45,19 +45,20 @@ def mutation(children, generation, num_parent):
                   30*np.pi/180, #ang s2
                   0.15])          #dist s2
     
-    pop_num = children.shape[0]
+    len_pop = len(children)
     
-    children_n = children.copy()
+    #children_n = children.copy()
     
-    for i in np.arange(num_parent, pop_num, 1):
+    for airfoil_num in range(num_parent, len_pop):
         deviation = coeff * np.random.randn(16) * gen_deviation
-        children_n[i,:] = children[i,:] + deviation
+        airfoil = children[airfoil_num]
+        proposed_genome = airfoil.genome + deviation
         n = 0
-        while not(test.airfoil_test(children_n[i,:])):
+        while not(test.airfoil_test(proposed_genome)):
             n = n + 1
             deviation = coeff * np.random.randn(16) * gen_deviation
-            children_n[i,:] = children[i,:] + deviation
+            proposed_genome = airfoil.genome + deviation
             print('mutating into viable airfoil, try #',n)
-        children[i,:] = children_n[i,:]
+        airfoil.genome = proposed_genome
     
-    return children
+   

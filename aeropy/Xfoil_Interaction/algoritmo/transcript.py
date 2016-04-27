@@ -115,35 +115,34 @@ def decode_genome(genome):
 The following code contains an example and will be used with test purposes only,
 when this script is run alone, and won't be used in the standard function of the 
 genetic algorithm.
-
-De-Comment the lines in order to use them.
 '''
-#
-#import matplotlib.pyplot as plt
-#
-#  
-#genes = np.array([150*np.pi/180, #ang s1
-#                  0.2,           #dist s1
-#                  0.5,           #x 1
-#                  0.12,          #y 1
-#                  0,             #ang 1
-#                  0.2,           #dist b1
-#                  0.2,           #dist c1
-#                  0.1,           #dist a1
-#                  0.05,          #dist a2
-#                  0.4,           #x 2
-#                  0.05,          #y 2
-#                  5*np.pi/180,   #ang 2
-#                  0.2,           #dist b2 
-#                  0.2,           #dist c2
-#                  160*np.pi/180, #ang s2
-#                  0.2])          #dist s2
-#
-
-#
-#perfil = decode_genome(genes)
-#
-#
-#plt.figure(num=None, figsize=(18, 6), dpi=80, facecolor='w', edgecolor='k')
-#plt.plot(perfil[:,0],perfil[:,1])
-#plt.gca().set_aspect(1)
+if __name__ == '__main__':
+    
+    import matplotlib.pyplot as plt
+    
+      
+    genes = np.array([150*np.pi/180, #ang s1
+                      0.2,           #dist s1
+                      0.5,           #x 1
+                      0.12,          #y 1
+                      0,             #ang 1
+                      0.2,           #dist b1
+                      0.2,           #dist c1
+                      0.1,           #dist a1
+                      0.05,          #dist a2
+                      0.4,           #x 2
+                      0.05,          #y 2
+                      5*np.pi/180,   #ang 2
+                      0.2,           #dist b2 
+                      0.2,           #dist c2
+                      160*np.pi/180, #ang s2
+                      0.2])          #dist s2
+    
+    
+    
+    perfil = decode_genome(genes)
+    
+    
+    plt.figure(num=None, figsize=(18, 6), dpi=80, facecolor='w', edgecolor='k')
+    plt.plot(perfil[:,0],perfil[:,1])
+    plt.gca().set_aspect(1)

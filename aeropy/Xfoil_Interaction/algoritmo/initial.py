@@ -18,13 +18,33 @@ It does so by adding a random deviation to a default profile genome.
 import os
 import numpy as np
 import algoritmo.testing as test
+import shutil
 
 
+class Airfoil(object):
+    '''This object represents a single airfoil'''
+    results_root = ''
+    
+    def __init__(self, genome):
+        self.genome = genome
+    def copy_data(self, gen, num):
+        airfoil_name = 'gen' + str(gen) + 'airf' + str(num)
+        new_root = os.path.join("aerodata","data" + airfoil_name + '.txt')
+        shutil.copy(self.results_root, new_root)
+        self.results_root = new_root
+        self.name = airfoil_name
+    def copy_winner(self, num):
+        new_root = os.path.join("results","data", 'winner '+str(num) + 'aerodata.txt')
+        shutil.copy(self.results_root, new_root)
+        self.results_root = new_root
+        
+        
 def start_pop(pop_num):
     '''Creates a randomly generated population of the size (pop_num)
     '''
     
-    genome = np.zeros([pop_num,16])    
+    population = []
+        
     
     genes = np.array([150*np.pi/180, #ang s1
                   0.2,           #dist s1
@@ -64,19 +84,20 @@ def start_pop(pop_num):
                   0.15])          #dist s2
                   
                   
-    for profile in np.arange(0, pop_num, 1):
+    for airfoil in range(pop_num):
+        genome = np.zeros(16)
         deviation = 0.7 * np.random.randn(16) * gen_deviation
-        genome[profile,:] = genes + deviation
-        while not(test.airfoil_test(genome[profile,:])):
+        genome = genes + deviation
+        while not(test.airfoil_test(genome)):
             
-            # Here we check tat our airfoil actually makes sense
-        
+            # Here we check that our airfoil actually makes sense        
             deviation = 0.7 * np.random.randn(16) * gen_deviation
-            genome[profile,:] = genes + deviation
-        
+            genome = genes + deviation
+        airfoil = Airfoil(genome)
+        population.append(airfoil)
 
     
-    profile_number = genome.shape[0]    
+       
     genome_root = os.path.join('genome','generation0.txt')
     title = 'generation 0 genome'
     
@@ -87,13 +108,14 @@ def start_pop(pop_num):
     archivo = open(genome_root, mode = 'x')
     archivo.write(title + '\n')
     
-    for profile in np.arange(0, profile_number, 1):
+    for airfoil in population:
         line = ''
-        for gen in np.arange(0, 16,1):
-            line = line + str(genome[profile, gen]) +'    '
+        genome = airfoil.genome
+        for gen in genome:
+            line = line + str(gen) +'    '
         line = line + '\n'
         archivo.write(line)
     
-    return genome
+    return population
 
 

@@ -20,21 +20,36 @@ the parents are preserved as the first elements of the new population.
 
 
 import numpy as np
+from algoritmo.initial import Airfoil
 
 
-
-def cross(parents, num_pop):
+def cross(parents, pop_len, generation):
     '''Generates a population of (num_pop) airfoil genomes by mixing randomly
     the genomes of the given parents.
     The parents are preserved as the first elements of the new population.
     '''
-    children = np.zeros([num_pop, 16])
-    num_parents = parents.shape[0]
-    children[0:num_parents] = parents
-    for i in np.arange(num_parents, num_pop, 1):
-        coef = np.random.rand(num_parents)
-        coef = coef/sum(coef)
-        children[i,:]= np.dot(coef, parents)
+    children = []
+    parents_len = len(parents)
+    
+    for parent_num in range(len(parents)):
+        parent = parents[parent_num]
+        parent.copy_data(generation + 1, parent_num)
+        children.append(parent)
+        
+    for child_num in range(parents_len, pop_len):
+        parent_1 = parents[np.random.choice(parents_len)]
+        parent_2 = parents[np.random.choice(parents_len)]
+        genome_1 = parent_1.genome
+        genome_2 = parent_2.genome
+        child_genome = []
+        coefs = np.random.rand(len(genome_1))
+        for gen_num in range(len(genome_1)):
+            gen = genome_1[gen_num] * coefs[gen_num]
+            gen += genome_2[gen_num] * (1- coefs[gen_num])
+            child_genome.append(gen)
+        child_genome = np.array(child_genome)
+        child = Airfoil(child_genome)
+        children.append(child)
         
     return children
 

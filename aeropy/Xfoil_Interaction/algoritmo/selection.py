@@ -22,13 +22,18 @@ if you wanted.
 import numpy as np
 
 
-def selection(score, genome, num_parent):
+def selection(population, num_parent):
     '''Select the genome of the (num_parent) best airfoils.
     '''
+    pop_len = len(population)
+    score = np.zeros(pop_len)
+    for airfoil_num in range(pop_len):
+        airfoil = population[airfoil_num]
+        score[airfoil_num] = airfoil.score
     invscore = 1- score
     positions = np.argsort(invscore)
-    parents = np.zeros([num_parent,16])
-    for i in np.arange(0,num_parent,1):
-        parents[i,:] = genome[positions[i],:]
+    parents =[]
+    for parent_count in range(num_parent):
+        parents.append(population[positions[parent_count]])
     
     return parents

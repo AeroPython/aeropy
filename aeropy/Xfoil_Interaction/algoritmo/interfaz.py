@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 '''
-
 Created on Fri Feb 20 20:57:16 2015
 
 @author: Juan Luis Cano, Alberto Lorenzo, Siro Moreno
@@ -27,21 +27,24 @@ import numpy as np
 import algoritmo.ambient as ambient
 
 
-def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aero_domain):
+def xfoil_calculate_profile(generation, airfoil_number,
+                            airfoil, ambient_data, aero_domain):
     
     '''Starts Xfoil and analyzes the given airfoil. Saves the results.
     '''
     
-    profile_name = 'gen' + str(generation) + 'prof' + str(profile_number)
-    geo_file_name = 'profile' + str(profile_number) + '.txt'
-    profile_root = os.path.join('profiles','gen' + str(generation) , geo_file_name )
-    data_root = os.path.join("aerodata","data" + profile_name + '.txt')    
+    airfoil_name = 'gen' + str(generation) + 'airf' + str(airfoil_number)
+    geo_file_name = 'airfoil' + str(airfoil_number) + '.txt'
+    airfoil_root = os.path.join('airfoils','gen' + str(generation) , geo_file_name )
+    data_root = os.path.join("aerodata","data" + airfoil_name + '.txt')    
+    airfoil.name = airfoil_name
+    airfoil.results_root = data_root
     
     aerodynamics = ambient.aero_conditions(ambient_data)
     
     
     commands = ['load',
-            profile_root,
+            airfoil_root,
             'oper',
             'mach ' + str(aerodynamics[0]),
             're ' + str(aerodynamics[1]),
@@ -57,11 +60,12 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
             'quit']
 
 
-    perfil = trans.decode_genome(genome)
+    genome = airfoil.genome    
+    airf_points = trans.decode_genome(genome)
     
 
     try:
-        os.remove(profile_root)
+        os.remove(airfoil_root)
     except :
         pass
     try:
@@ -70,12 +74,12 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
         pass
    
     
-    archivo = open(profile_root, mode = 'x')
-    archivo.write(profile_name + '\n')
-
+    archivo = open(airfoil_root, mode = 'x')
+    archivo.write(airfoil_name + '\n')
 
     for i in np.arange(0,100,1):
-        texto = str(round(perfil[i,0],6)) + '   ' + str(round(perfil[i,1],6)) +'\n'
+        texto = str(round(airf_points[i,0],6))
+        texto += '   ' + str(round(airf_points[i,1],6)) +'\n'
         archivo.write(texto)
     archivo.close()
 
@@ -91,21 +95,24 @@ def xfoil_calculate_profile(generation,profile_number, genome, ambient_data, aer
     for line in p.stdout.readlines():
         print(line.decode(), end='')
 
-def xfoil_calculate_population(generation, ambient_data, aero_domain):
+def xfoil_calculate_population(generation, population,
+                               ambient_data, aero_domain,
+                               num_parent = 0):
     '''Given a generation number and ambiental conditions, reads the file
     which contains the genome information of the generation, and uses xfoil to
     analyze each airfoil.
     '''
     
-    genome_root = os.path.join('genome','generation'+ str(generation) + '.txt')    
-    genome_matrix = np.loadtxt(genome_root, skiprows=1)    
-    num_pop = genome_matrix.shape[0]
     
-    profile_folder = os.path.join('profiles', 'gen' + str(generation))
-    if not os.path.exists(profile_folder):
-        os.makedirs(profile_folder)
+    pop_len = len(population)
     
-    for profile_number in np.arange(1,num_pop+1,1):
-        xfoil_calculate_profile(generation, profile_number, genome_matrix[profile_number-1,:], ambient_data, aero_domain)
+    airfoils_folder = os.path.join('airfoils', 'gen' + str(generation))
+    if not os.path.exists(airfoils_folder):
+        os.makedirs(airfoils_folder)
+    
+    for airfoil_number in range(num_parent, pop_len):
+        xfoil_calculate_profile(generation, airfoil_number,
+                                population[airfoil_number],
+                                ambient_data, aero_domain)
 
 

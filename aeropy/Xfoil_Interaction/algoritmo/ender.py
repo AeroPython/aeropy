@@ -27,13 +27,15 @@ import matplotlib.pyplot as plt
 import algoritmo.transcript as transcript
 import algoritmo.ambient as ambient
 import subprocess
+import shutil
 #import algoritmo.ender_report
 
 
-def finish (all_parameters):
+def finish (population, all_parameters):
     
     
     generation = all_parameters[1]
+    num_parent = all_parameters[2]
     num_winners = all_parameters[3]
     weights = all_parameters[4]
     end_options = all_parameters[5]    
@@ -47,14 +49,18 @@ def finish (all_parameters):
     must_compare_naca_custom = end_options[4]
     must_create_report = end_options[5]
     
-    analyze_final(generation, num_winners, weights)
+#    analyze_final(generation, num_winners, weights)
+    analyze.pop_analice (generation, population, num_parent)
+    analyze.score(generation, population, weights)
+    save_last_gen(population, generation)
+    winners = selection.selection(population, num_winners)
     
     compare = must_compare_naca_standard
     final_xfoil(generation, ambient_data, aero_domain, compare)
-    analyze_winners(generation, num_winners, weights)
+    analyze_winners(winners)
     calculate_evolution(generation, num_winners, compare)
     if (must_draw_winners):
-        draw_winners(compare)
+        draw_winners(winners, compare)
     if (must_draw_polars):
         draw_aero_comparison(num_winners, compare)
     if (must_draw_evolution):
@@ -62,38 +68,120 @@ def finish (all_parameters):
     #if (must_create_report):
     #    ender_report.create_report(all_parameters)
 
+def save_last_gen(population, generation):
+    
+    
+    results_name = 'results_data_generation'+ str(generation) + '.txt'
+    results_root = os.path.join('results', 'data', results_name )
+    results_title = 'generation' + str(generation) + 'results:'
+        
+    try:
+        os.remove(results_root)
+    except :
+        pass
+    
 
-def analyze_final(generation, num_winners, weights):
-    '''Analyze the data of the last generation
+    results_file = open(results_root, mode = 'x')
+    results_file.write(results_title + '\n')
+    results_file.write('Cl max   Eficciency      Score\n')
+    
+    for airfoil in population:
+        result = str(airfoil.clmax) + '   ' 
+        result += str(airfoil.maxefic) + '   '
+        result += str(airfoil.score) + '\n'
+        results_file.write(result)
+    
+    results_file.close()    
+    
+#def analyze_final(generation, population, num_winners, weights):
+#    '''Analyze the data of the last generation
+#    '''
+#    file_parent_name = 'generation'+ str(generation) + '.txt'
+#    genome_parent_root = os.path.join('genome', file_parent_name)    
+#    genome = np.loadtxt(genome_parent_root, skiprows=1)
+#    num_pop = genome.shape[0]
+#    results_data = analyze.pop_analice(generation, num_pop)
+#    
+#    scores = analyze.score(generation,num_pop, weights)
+#    winners = selection.selection(scores, genome, num_winners)
+#    
+#    
+#    
+#    
+#    file_name = 'winners.txt'
+#    genome_root = os.path.join('genome', file_name)
+#    title = 'winners genome'
+#    
+#    results_name = 'results_data_generation'+ str(generation) + '.txt'
+#    results_root = os.path.join('results', 'data', results_name )
+#    results_title = 'generation' + str(generation) + 'results:'
+#    
+#    
+#    try:
+#        os.remove(genome_root)
+#    except:
+#        pass
+#    
+#    try:
+#        os.remove(results_root)
+#    except :
+#        pass
+#    
+#    genome_file = open(genome_root, mode = 'x')
+#    results_file = open(results_root, mode = 'x')
+#    genome_file.write(title + '\n')
+#    results_file.write(results_title + '\n')
+#    results_file.write('Cl max   Eficciency      Score' + '\n')
+#    
+#    
+#    for profile in np.arange(0, num_pop, 1):
+#        result = str(results_data[profile, 0]) + '   ' 
+#        result = result + str(results_data[profile, 1]) + '   '
+#        result = result + str(scores[profile]) + '\n'
+#        results_file.write(result)
+#    for profile in np.arange(0, num_winners, 1):
+#        line = ''
+#        for gen in np.arange(0, 16,1):
+#            line = line + str(winners[profile, gen]) +'    '
+#        line = line + '\n'
+#        genome_file.write(line)
+#    genome_file.close()
+#    results_file.close()
+
+
+def analyze_winners(winners):
+    '''Analyze the data of the winners
     '''
-    file_parent_name = 'generation'+ str(generation) + '.txt'
-    genome_parent_root = os.path.join('genome', file_parent_name)    
-    genome = np.loadtxt(genome_parent_root, skiprows=1)
-    num_pop = genome.shape[0]
-    results_data = analyze.pop_analice(generation, num_pop)
     
-    scores = analyze.score(generation,num_pop, weights)
-    winners = selection.selection(scores, genome, num_winners)
+#    results = np.zeros([num_winners, 3])
+#    
+#    for i in np.arange(0, num_winners, 1):
+#        dataname = 'datagen' + str(generation) + 'prof' + str(i + 1) + '.txt'
+#        data_root = os.path.join('aerodata', dataname)
+#        data = np.loadtxt(data_root, skiprows = 12, usecols=[1,2])
+#        clmax = max(data[:,0])
+#        efimax = max(data[:,0] / data[:,1])
+#        results[i, 0:2] = [clmax, efimax]
+#        
+#    cl_score = analyze.adimension(results[:,0])
+#    efic_score = analyze.adimension(results[:,1])
+#    results[:,2] = weights[0] * cl_score + weights[1] * efic_score
     
     
-    
+    results_name = 'results_winners.txt'
+    results_root = os.path.join('results', 'data', results_name )
+    results_title = 'Winners results:'
     
     file_name = 'winners.txt'
     genome_root = os.path.join('genome', file_name)
     title = 'winners genome'
     
-    results_name = 'results_data_generation'+ str(generation) + '.txt'
-    results_root = os.path.join('results', 'data', results_name )
-    results_title = 'generation' + str(generation) + 'results:'
-    
-    
-    try:
-        os.remove(genome_root)
-    except:
-        pass
-    
     try:
         os.remove(results_root)
+    except :
+        pass
+    try:
+        os.remove(genome_root)
     except :
         pass
     
@@ -101,90 +189,46 @@ def analyze_final(generation, num_winners, weights):
     results_file = open(results_root, mode = 'x')
     genome_file.write(title + '\n')
     results_file.write(results_title + '\n')
-    results_file.write('Cl max   Eficciency      Score' + '\n')
+    results_file.write('Cl max   Eficciency      Score\n')
     
-    for profile in np.arange(0, num_pop, 1):
-        result = str(results_data[profile, 0]) + '   ' 
-        result = result + str(results_data[profile, 1]) + '   '
-        result = result + str(scores[profile]) + '\n'
-        results_file.write(result)
-    for profile in np.arange(0, num_winners, 1):
+    for airfoil_num in range(len(winners)):
+        airfoil = winners[airfoil_num]
+        airfoil.copy_winner(airfoil_num + 1)
         line = ''
-        for gen in np.arange(0, 16,1):
-            line = line + str(winners[profile, gen]) +'    '
+        for gen in airfoil.genome:
+            line = line + str(gen) +'    '
         line = line + '\n'
         genome_file.write(line)
-    genome_file.close()
-    results_file.close()
-
-
-def analyze_winners(generation, num_winners, weights):
-    '''Analyze the data of the winners
-    '''
-    
-    results = np.zeros([num_winners, 3])
-    
-    for i in np.arange(0, num_winners, 1):
-        dataname = 'datagen' + str(generation) + 'prof' + str(i + 1) + '.txt'
-        data_root = os.path.join('aerodata', dataname)
-        data = np.loadtxt(data_root, skiprows = 12, usecols=[1,2])
-        clmax = max(data[:,0])
-        efimax = max(data[:,0] / data[:,1])
-        results[i, 0:2] = [clmax, efimax]
-        
-    cl_score = analyze.adimension(results[:,0])
-    efic_score = analyze.adimension(results[:,1])
-    results[:,2] = weights[0] * cl_score + weights[1] * efic_score
-    
-    
-    results_name = 'results_winners.txt'
-    results_root = os.path.join('results', 'data', results_name )
-    results_title = 'Winners results:'
-    
-    
-    try:
-        os.remove(results_root)
-    except :
-        pass
-    
-    results_file = open(results_root, mode = 'x')
-    results_file.write(results_title + '\n')
-    results_file.write('Cl max   Eficciency      Score' + '\n')
-    
-    for profile in np.arange(0, num_winners, 1):
-        result = str(results[profile, 0]) + '   ' 
-        result = result + str(results[profile, 1]) + '   '
-        result = result + str(results[profile, 2]) + '\n'
+        result = str(airfoil.clmax) + '   ' 
+        result += str(airfoil.maxefic) + '   '
+        result += str(airfoil.score) + '\n'
         results_file.write(result)
 
 #--- Drawing Airfoils
 
 
         
-def draw_winners(options):
+def draw_winners(winners, options):
     
-    winners_root = os.path.join('genome', 'winners.txt')
-    winners_genome = np.loadtxt(winners_root, skiprows=1)
+    num_winners = len(winners)
     
-    num_winners = winners_genome.shape[0]
-    
-    for winner in np.arange(0, num_winners, 1):
-        
+    for winner in range(num_winners):
+        genome = winners[winner].genome
         graph_name = 'winner ' + str(winner + 1)
         graph_root = os.path.join('results','graphics',graph_name + '.png')
-        point_data = transcript.decode_genome(winners_genome[winner,:])
+        point_data = transcript.decode_genome(genome)
         draw_figure(graph_name, graph_root, point_data)
     
     if (options):
         graph_name = 'NACA 5615'
         graph_root = os.path.join('results','graphics',graph_name + '.png')
-        data_root = os.path.join('profiles','winners',graph_name + '.txt')
+        data_root = os.path.join('airfoils','winners',graph_name + '.txt')
         point_data = np.loadtxt(data_root, skiprows = 1)
         draw_figure(graph_name, graph_root, point_data)
         
         graph_name = 'NACA 5603'
         graph_root = os.path.join('results','graphics',graph_name + '.png')
-        data_root = os.path.join('profiles','winners',graph_name + '.txt')
+        data_root = os.path.join('airfoils','winners',graph_name + '.txt')
         point_data = np.loadtxt(data_root, skiprows = 1)
         draw_figure(graph_name, graph_root, point_data)
         
@@ -236,7 +280,7 @@ def xfoil_calculate_profile(profile_name, profile_root,
             '',
             'quit']
     if (profile_type == 'NACA'):
-        naca_root = os.path.join('profiles', 'winners', profile_name + '.txt')
+        naca_root = os.path.join('airfoils', 'winners', profile_name + '.txt')
         commands.extend(['save',naca_root])
     commands.extend(commands2)
 
@@ -263,60 +307,60 @@ def xfoil_calculate_profile(profile_name, profile_root,
 
 def final_xfoil(total_generations, ambient_data, aero_domain, compare):
     
-    profile_folder = os.path.join('profiles','winners')    
-    if not os.path.exists(profile_folder):
-        os.makedirs(profile_folder) 
+    airfoil_folder = os.path.join('airfoils','winners')    
+    if not os.path.exists(airfoil_folder):
+        os.makedirs(airfoil_folder) 
         
-    genome_root = os.path.join('genome','winners.txt')
-    genome_matrix = np.loadtxt(genome_root, skiprows=1)    
-    num_winners = genome_matrix.shape[0]
-    
-    
-    for profile in np.arange(0, num_winners, 1):
-        genome = genome_matrix[profile,:]
-        profile_name = 'winner ' + str(profile + 1)
-        profile_root = os.path.join('profiles','winners', profile_name + '.txt')
-        
-        perfil = transcript.decode_genome(genome)
-        try:
-            os.remove(profile_root)
-        except :
-            pass 
-   
-    
-        archivo = open(profile_root, mode = 'x')
-        archivo.write(profile_name + '\n')
-        for i in np.arange(0,100,1):
-            texto = str(round(perfil[i,0],6)) + '   ' + str(round(perfil[i,1],6)) +'\n'
-            archivo.write(texto)
-        archivo.close()
-        
-        xfoil_calculate_profile(profile_name, profile_root,
-                                ambient_data, aero_domain,
-                                'load')
+#    genome_root = os.path.join('genome','winners.txt')
+#    genome_matrix = np.loadtxt(genome_root, skiprows=1)    
+#    num_winners = genome_matrix.shape[0]
+#    
+#    
+#    for profile in np.arange(0, num_winners, 1):
+#        genome = genome_matrix[profile,:]
+#        profile_name = 'winner ' + str(profile + 1)
+#        profile_root = os.path.join('profiles','winners', profile_name + '.txt')
+#        
+#        perfil = transcript.decode_genome(genome)
+#        try:
+#            os.remove(profile_root)
+#        except :
+#            pass 
+#   
+#    
+#        archivo = open(profile_root, mode = 'x')
+#        archivo.write(profile_name + '\n')
+#        for i in np.arange(0,100,1):
+#            texto = str(round(perfil[i,0],6)) + '   ' + str(round(perfil[i,1],6)) +'\n'
+#            archivo.write(texto)
+#        archivo.close()
+#        
+#        xfoil_calculate_profile(profile_name, profile_root,
+#                                ambient_data, aero_domain,
+#                                'load')
     if (compare):
         
-        profile_name = 'NACA 5615'
-        profile_root = '5615'
+        airfoil_name = 'NACA 5615'
+        airfoil_root = '5615'
         
         try:
-            os.remove(os.path.join('profiles','winners', profile_name + '.txt'))
+            os.remove(os.path.join('airfoils','winners', airfoil_name + '.txt'))
         except :
             pass 
         
-        xfoil_calculate_profile(profile_name, profile_root,
+        xfoil_calculate_profile(airfoil_name, airfoil_root,
                                 ambient_data, aero_domain,
                                 'NACA')
                                 
-        profile_name2 = 'NACA 5603'
-        profile_root2 = '5603'
+        airfoil_name2 = 'NACA 5603'
+        airfoil_root2 = '5603'
         
         try:
-            os.remove(os.path.join('profiles','winners', profile_name2 + '.txt'))
+            os.remove(os.path.join('airfoils','winners', airfoil_name2 + '.txt'))
         except :
             pass 
         
-        xfoil_calculate_profile(profile_name2, profile_root2,
+        xfoil_calculate_profile(airfoil_name2, airfoil_root2,
                                 ambient_data, aero_domain,
                                 'NACA')
 
@@ -431,7 +475,7 @@ def calculate_evolution(max_generations, num_winners, options):
     
    
     
-    for gen in np.arange(0,max_generations + 1,1):
+    for gen in range(max_generations):
         lift.append([])
         effic.append([])
         data_root = os.path.join('results','data','results_data_generation'+ str(gen) + '.txt')
@@ -470,7 +514,7 @@ def calculate_evolution(max_generations, num_winners, options):
         lift_file.write('winner ' + str(i) + '     ')
     lift_file.write('\n')
     
-    for gen in np.arange(0, max_generations + 1, 1):
+    for gen in np.arange(0, max_generations, 1):
         lift_file.write('    '+ str(gen) + '        ')
         
         for win in np.arange(0, num_winners, 1):
@@ -486,7 +530,7 @@ def calculate_evolution(max_generations, num_winners, options):
         effic_file.write('winner ' + str(i) + '          ')
     effic_file.write('\n')
     
-    for gen in np.arange(0, max_generations + 1, 1):
+    for gen in np.arange(0, max_generations, 1):
         effic_file.write('    '+ str(gen) + '      ')
         
         for win in np.arange(0, num_winners, 1):

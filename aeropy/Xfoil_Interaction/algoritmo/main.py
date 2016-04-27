@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 
 Created on Fri Feb 20 20:57:16 2015
@@ -17,8 +18,8 @@ genetic optimization of the profile.
 
 
 import os
+
 import algoritmo.interfaz as interfaz
-import numpy as np
 import algoritmo.initial as initial
 import algoritmo.genetics as genetics
 import algoritmo.ender as ender
@@ -70,24 +71,28 @@ def main_program(all_parameters):
     generation = 0
 
 
-    initial.start_pop(airfoils_per_generation)
+    population = initial.start_pop(airfoils_per_generation)
 
-    interfaz.xfoil_calculate_population(generation, ambient_data, aero_domain)
+    interfaz.xfoil_calculate_population(generation, population,
+                                        ambient_data, aero_domain)
 
 
 ####--- Genetic Algorithm
 
 
-    for generation in np.arange(0,total_generations,1):
+    for generation in range(0,total_generations):
     
 
-        genetics.genetic_step(generation,num_parent, weighting_parameters)
+        population = genetics.genetic_step(generation, population, 
+                              num_parent, weighting_parameters)
     
-        interfaz.xfoil_calculate_population(generation + 1, ambient_data, aero_domain)
+        interfaz.xfoil_calculate_population(generation + 1, population,
+                                            ambient_data, aero_domain,
+                                            num_parent)
     
    
 
-    ender.finish(all_parameters)    
+    ender.finish(population, all_parameters)    
     
 
 
@@ -97,9 +102,14 @@ if __name__ == '__main__':
 
 ####---------Primary Variables-----
 
+        
+    import interfaz
+    import initial
+    import genetics
+    import ender
 
-    airfoils_per_generation = 6
-    total_generations = 6
+    airfoils_per_generation = 4
+    total_generations = 4
     num_parent = 2
 
 # We give the algorithm the conditions at wich we want to optimize our airofil
